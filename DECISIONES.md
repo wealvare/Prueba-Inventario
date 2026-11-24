@@ -113,3 +113,23 @@ La compilación de producción usa `/api`, relativa al sitio, para no fijar una 
 Un interceptor convierte las respuestas fallidas en `ErrorApi`, con mensaje en español, correlación y errores por campo. Usa el detalle de ProblemDetails en los errores de negocio y un texto genérico en los de servidor, donde además muestra la correlación para poder buscarla en los registros. El 401 cierra la sesión, salvo en el propio inicio de sesión. El registro del frontend escribe en la consola método, URL, estado y correlación, sin cuerpos ni tokens.
 
 El token solo se adjunta a peticiones dirigidas a la Api.
+
+## Filtros del listado en la URL
+
+La URL es la única fuente del filtro: el formulario navega tras 400 ms sin cambios y el listado se consulta al cambiar los parámetros. Así la búsqueda sobrevive a recargas y al botón atrás. `rxResource` cancela la petición anterior cuando el filtro cambia. Solo se usan los parámetros que admite la Api, por eso no hay ordenamiento y la categoría se escribe con su nombre exacto.
+
+## Formulario de producto
+
+Crear y editar comparten pantalla. Las validaciones reflejan las del backend para responder de inmediato, y la Api sigue siendo la autoridad: sus errores 400 se muestran junto al campo y los 409 como mensaje, sin perder lo escrito. El precio se limita a 9.999.999.999.999,99, menos que la base de datos, porque por encima un número de JavaScript pierde centavos.
+
+## Errores en pantalla o en notificación
+
+Cada petición indica qué errores muestra su propia pantalla mediante un `HttpContextToken`. El resto aparece como notificación, de modo que un mismo error no se muestra dos veces.
+
+## Confirmación de eliminación
+
+Usa el elemento `dialog` nativo, que bloquea el resto de la página y cierra con Escape. Además mantiene el foco dentro y lo devuelve al botón que lo abrió.
+
+## Control por rol en el frontend
+
+Los botones de escritura se ocultan y las rutas se protegen con la guardia de administrador. Es una ayuda de interfaz: la Api vuelve a comprobar el rol en cada petición.

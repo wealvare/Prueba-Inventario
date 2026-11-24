@@ -90,3 +90,20 @@ La URL base de la Api se configura en `Frontend/src/entornos`. En desarrollo, `e
 npm run build
 npm test -- --watch=false
 ```
+
+### Pantallas
+
+| Ruta | Pantalla | Acceso |
+|---|---|---|
+| `/iniciar-sesion` | Inicio de sesión | Público |
+| `/productos` | Listado con búsqueda, filtros y paginación | Administrador y Consulta |
+| `/productos/{id}` | Detalle con sus lotes | Administrador y Consulta |
+| `/productos/nuevo` | Crear producto | Administrador |
+| `/productos/{id}/editar` | Editar producto y lotes | Administrador |
+
+### Probar con ambos usuarios
+
+1. Entra como administrador. Crea un producto con dos lotes, ábrelo, edítalo, quita un lote y guarda.
+2. Intenta repetir un código o un número de lote y revisa los mensajes.
+3. Elimínalo, búscalo con el estado Inactivos y reactívalo desde la edición.
+4. Sal y entra como consulta. Solo verás el listado y el detalle, y `/productos/nuevo` te devolverá al listado.

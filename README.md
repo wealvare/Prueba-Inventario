@@ -72,8 +72,19 @@ Los errores se devuelven como `application/problem+json`. El valor `correlacion`
 
 ## Frontend
 
+Con la Api en ejecución:
+
 ```bash
 cd Frontend
 npm ci
 npm start
+```
+
+Abre `http://localhost:4200` e inicia sesión con uno de los usuarios definidos en `.env`. Ese origen debe estar en `Cors__OrigenesPermitidos__0`.
+
+La URL de la Api se configura en `Frontend/src/entornos`: `entorno.ts` para desarrollo y `entorno.produccion.ts` para producción. Por defecto es `http://localhost:5165`.
+
+```bash
+npm run build
+npm test -- --watch=false
 ```

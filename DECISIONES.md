@@ -89,3 +89,21 @@ Se aplica solo sobre HTTP y queda desactivada en HTTPS para no exponer las respu
 ## Swagger
 
 Se publica solo en desarrollo. La estructura se documenta con atributos y los ejemplos con un filtro, sin comentarios XML en el código.
+
+## Frontend con signals
+
+El estado de sesión y las notificaciones viven en servicios con signals de solo lectura hacia fuera, y los valores derivados se calculan con `computed`. RxJS queda para las peticiones HTTP. No se usa una librería de estado porque no hay estado complejo que compartir.
+
+## Carga diferida
+
+Cada funcionalidad declara sus rutas y sus páginas se descargan al visitarlas. El diseño principal también, de modo que el inicio de sesión no lo carga. El código se organiza en `nucleo`, `compartido` y `funcionalidades`.
+
+## Sesión en el navegador
+
+El token se guarda en `sessionStorage`: sobrevive a recargas, pero se borra al cerrar la pestaña. El frontend lee el rol y la expiración solo para adaptar la interfaz; la autorización real la hace la Api. La sesión se cierra con un temporizador y también se comprueba la vigencia antes de cada petición, por si el equipo estuvo suspendido. La ruta de retorno tras iniciar sesión solo admite rutas internas.
+
+## Errores en el frontend
+
+Un interceptor convierte las respuestas fallidas en `ErrorApi`, con mensaje en español, correlación y errores por campo. Usa el detalle de ProblemDetails en los errores de negocio y un texto genérico en los de servidor, donde además muestra la correlación para poder buscarla en los registros. El 401 cierra la sesión, salvo en el propio inicio de sesión. El registro del frontend escribe en la consola método, URL, estado y correlación, sin cuerpos ni tokens.
+
+El token solo se adjunta a peticiones dirigidas a la Api.

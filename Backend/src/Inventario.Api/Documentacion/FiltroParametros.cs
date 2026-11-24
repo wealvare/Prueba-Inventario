@@ -7,7 +7,7 @@ internal sealed class FiltroParametros : IOperationFilter
 {
     private static readonly Dictionary<string, string> Descripciones = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["id"] = "Id del producto.",
+        ["id"] = "Id del recurso.",
         ["pagina"] = "Número de página, desde 1.",
         ["tamanoPagina"] = "Elementos por página, entre 1 y 100.",
         ["busqueda"] = "Texto contenido en el código, el nombre o la descripción.",

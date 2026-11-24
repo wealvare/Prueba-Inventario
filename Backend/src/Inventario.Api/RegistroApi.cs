@@ -1,11 +1,13 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
+using Inventario.Api.Autorizacion;
 using Inventario.Api.Correlacion;
 using Inventario.Api.Documentacion;
 using Inventario.Api.Errores;
 using Inventario.Infraestructura.Configuracion;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -66,7 +68,11 @@ public static class RegistroApi
     private static void AgregarAutenticacion(IServiceCollection servicios)
     {
         servicios.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
-        servicios.AddAuthorization();
+        servicios.AddHttpContextAccessor();
+        servicios.AddScoped<IAuthorizationHandler, ManejadorAdministradorActivo>();
+        servicios.AddAuthorization(opciones => opciones.AddPolicy(
+            RequisitoAdministradorActivo.Politica,
+            politica => politica.RequireAuthenticatedUser().AddRequirements(new RequisitoAdministradorActivo())));
         servicios.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
             .Configure<OpcionesJwt>((opciones, jwt) =>
             {
@@ -132,7 +138,7 @@ public static class RegistroApi
             {
                 Title = "Inventario de productos",
                 Version = "v1",
-                Description = "API para administrar productos y sus lotes."
+                Description = "API para administrar productos, sus lotes y los usuarios."
             });
             opciones.AddSecurityDefinition(FiltroSeguridad.Esquema, new OpenApiSecurityScheme
             {

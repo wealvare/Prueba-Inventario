@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using Inventario.Aplicacion.Autenticacion.Dtos;
 using Inventario.Aplicacion.Productos.Dtos;
+using Inventario.Aplicacion.Usuarios.Dtos;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -13,6 +14,18 @@ internal sealed class FiltroEjemplos : ISchemaFilter
         [typeof(SolicitudInicioSesion)] = """{ "nombreUsuario": "admin", "contrasena": "tu-contrasena" }""",
         [typeof(RespuestaInicioSesion)] = """
             { "token": "eyJhbGciOi...", "expiracion": "2026-01-15T15:00:00Z", "nombreUsuario": "admin", "rol": "Administrador" }
+            """,
+        [typeof(SolicitudRegistro)] = """
+            { "nombreUsuario": "ana.perez", "correo": "ana@ejemplo.com", "contrasena": "Tu-contrasena1" }
+            """,
+        [typeof(SolicitudCrearUsuario)] = """
+            { "nombreUsuario": "ana.perez", "correo": "ana@ejemplo.com", "contrasena": "Tu-contrasena1", "rol": "Consulta" }
+            """,
+        [typeof(SolicitudActualizarUsuario)] = """
+            { "nombreUsuario": "ana.perez", "correo": "ana@ejemplo.com", "rol": "Consulta", "activo": true, "contrasena": null }
+            """,
+        [typeof(UsuarioDto)] = """
+            { "id": 3, "nombreUsuario": "ana.perez", "correo": "ana@ejemplo.com", "rol": "Consulta", "activo": true }
             """,
         [typeof(SolicitudCrearProducto)] = """
             {

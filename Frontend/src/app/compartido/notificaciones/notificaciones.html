@@ -1,0 +1,29 @@
+<section
+  aria-label="Notificaciones"
+  class="pointer-events-none fixed inset-x-4 bottom-4 z-30 flex flex-col gap-3 sm:left-auto sm:w-96"
+>
+  @for (notificacion of notificaciones(); track notificacion.id) {
+    <div
+      class="pointer-events-auto flex items-start gap-3 rounded-lg border border-l-4 border-neutral-200 bg-white p-4 text-sm shadow-sm"
+      [class]="bordes[notificacion.tipo]"
+      [attr.role]="notificacion.tipo === 'error' ? 'alert' : 'status'"
+    >
+      <div class="min-w-0 flex-1">
+        <p class="break-words text-neutral-800">{{ notificacion.mensaje }}</p>
+        @if (notificacion.correlacion) {
+          <p class="mt-1 text-xs break-all text-neutral-500">
+            Código de seguimiento: {{ notificacion.correlacion }}
+          </p>
+        }
+      </div>
+      <button
+        type="button"
+        class="rounded px-1 text-lg leading-none text-neutral-500 hover:text-neutral-900"
+        aria-label="Cerrar notificación"
+        (click)="cerrar(notificacion.id)"
+      >
+        ×
+      </button>
+    </div>
+  }
+</section>

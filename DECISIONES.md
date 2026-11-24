@@ -41,12 +41,25 @@ La semilla crea los usuarios que falten y carga 15 productos solo si la tabla es
 
 - **Secretos:** están en `.env`, que no se versiona. `.env.example` documenta las variables.
 - **Contraseñas:** BCrypt con factor 12 y prehash SHA-384, para no truncar a 72 bytes. Si el usuario no existe verifico un hash ficticio, de modo que el tiempo de respuesta no lo revele.
-- **JWT:** valido firma, algoritmo, emisor, audiencia y expiración, con 30 segundos de tolerancia. Un cambio de rol se aplica al emitir el siguiente token.
+- **Política de contraseñas:** de 8 a 100 caracteres, con mayúscula, minúscula y número. Se aplica en el registro y en la administración de usuarios.
+- **Credenciales de demostración:** `.env.example` trae `123Admin` para los usuarios de la semilla, solo para probar. No están en el código. Como la semilla no modifica usuarios existentes, aplicarlas sobre una base ya creada exige recrearla con `docker compose down -v`.
+- **JWT:** valido firma, algoritmo, emisor, audiencia y expiración, con 30 segundos de tolerancia. Un cambio de rol se aplica al emitir el siguiente token, salvo en la administración de usuarios, que consulta el rol y el estado actuales.
 - **Roles:** Administrador lee y escribe; Consulta solo lee. La Api lo comprueba en cada petición. En el frontend oculto botones y protejo rutas solo como ayuda de interfaz.
-- **Límite de inicio de sesión:** por IP y minuto, en memoria de cada instancia.
+- **Límite de inicio de sesión y registro:** un solo contador para ambos, por IP y minuto, en memoria de cada instancia.
 - **Sesión:** guardo el token en `sessionStorage`, que se borra al cerrar la pestaña, y solo lo adjunto a peticiones de la Api.
 
 Preferí `sessionStorage` a una cookie `HttpOnly` porque la Api es sin estado y recibe el token en `Authorization`, lo que evita la defensa contra CSRF y simplifica el uso entre orígenes. El costo es que un script malicioso (XSS) podría leerlo. Lo mitigo con el escape automático de Angular, sin insertar HTML, y una expiración configurable (60 minutos en el ejemplo). Una cookie `HttpOnly`, `Secure` y `SameSite` impediría leerlo, pero exige emitirla e invalidarla en la Api y protegerse de CSRF.
+
+## Usuarios y registro
+
+- **El registro siempre crea el rol Consulta.** La solicitud no tiene campo de rol y el caso de uso lo fija, así que un `rol` en el cuerpo se ignora. Solo un administrador asigna roles.
+- **Cuenta propia:** un administrador no puede quitarse el rol ni desactivarse. La regla está en la entidad `Usuario` y responde 409.
+- **Último administrador:** el caso de uso comprueba que quede otro activo y el repositorio lo repite dentro de la transacción, con la tabla bloqueada. Sin ese bloqueo, dos administradores que se desactivaran a la vez dejarían el sistema sin ninguno.
+- **Usuarios inactivos:** reciben el mismo 401 que unas credenciales incorrectas, después de verificar la contraseña, para no revelar por mensaje ni por tiempo que la cuenta existe.
+- **Token vigente de un administrador retirado:** `/api/usuarios` exige una política que consulta la base de datos. De lo contrario, un administrador desactivado podría reactivarse mientras su token no expire. Cuesta una consulta por petición y solo afecta a esos endpoints.
+- **Desactivar en lugar de borrar:** conserva la cuenta y permite reactivarla. Su nombre y correo siguen reservados.
+- **Duplicados:** igual que con los productos, el caso de uso comprueba y los índices únicos garantizan. El 409 del registro revela que un nombre o correo existe; lo acepto para que la persona sepa qué corregir y lo mitigo con el límite de peticiones.
+- **Datos expuestos:** las respuestas usan `UsuarioDto`, que no tiene contraseña ni hash.
 
 ## CORS
 
@@ -77,7 +90,7 @@ También comprimo las respuestas HTTP, pero no HTTPS, para no exponerlas a ataqu
 
 ## Errores y registro
 
-**Backend.** Un middleware convierte las excepciones en ProblemDetails en español con un identificador de correlación: validación y reglas a 400, credenciales a 401, inexistente a 404, duplicados y lotes que ya no existen a 409, y el resto a 500 sin detalles internos. Serilog escribe en consola y en archivos diarios con retención de 14. Los 500 quedan como error y los 4xx como advertencia, con método, ruta, estado y duración, nunca con cuerpos, tokens ni cadenas de consulta.
+**Backend.** Un middleware convierte las excepciones en ProblemDetails en español con un identificador de correlación: validación y reglas a 400, credenciales a 401, inexistente a 404, duplicados, lotes que ya no existen y protecciones de administradores a 409, y el resto a 500 sin detalles internos. Serilog escribe en consola y en archivos diarios con retención de 14. Los 500 quedan como error y los 4xx como advertencia, con método, ruta, estado y duración, nunca con cuerpos, tokens ni cadenas de consulta.
 
 **Frontend.** Un interceptor traduce cada fallo a un mensaje en español. Cada petición declara qué errores muestra su pantalla; el resto aparece como notificación. Un 401 cierra la sesión y un 500 muestra la correlación para buscarla en los registros. Los errores ajenos a la Api llegan a un `ErrorHandler` propio.
 
@@ -113,6 +126,7 @@ El registro del frontend queda solo en la consola del navegador. Como mejora, en
 - **Filtros y URL:** el formulario y la URL se actualizaban entre sí. Dejé la URL como fuente y el formulario solo navega.
 - **Foco del diálogo:** al cerrarlo, el foco se perdía. Guardo el elemento activo al abrir y se lo devuelvo.
 - **Respuestas con JSON inválido:** Angular las informa como fallo con estado 200. Las trato como error del servidor.
+- **Registro de peticiones:** Serilog usaba el logger estático, que se cierra al liberar cualquier host del proceso, y las pruebas dependían del orden. Ahora cada host usa el suyo.
 - **Serilog:** la versión 11 de `Serilog.AspNetCore` arrastraba dependencias de .NET 11. Fijé la 10.
 
 ## Limitaciones y mejoras
@@ -120,8 +134,8 @@ El registro del frontend queda solo en la consola del navegador. Como mejora, en
 - **Edición simultánea:** gana la última persona en guardar, salvo duplicados o lotes eliminados. Agregaría una columna `rowversion`.
 - **Búsqueda:** recorre un índice completo, igual que el listado de todos los estados ordena todas sus filas. Con más volumen usaría búsqueda de texto completo.
 - **Límite de inicio de sesión:** con varias instancias requiere un contador compartido, y detrás de un proxy, los encabezados reenviados.
-- **Sesión:** no hay renovación ni revocación de tokens.
-- **Usuarios:** solo existen los de la semilla; no hay pantalla para administrarlos.
+- **Sesión:** no hay renovación ni revocación de tokens. Desactivar un usuario o cambiar su contraseña no cierra las sesiones abiertas: puede seguir usando los productos con los permisos de su token hasta que expire.
+- **Usuarios:** el registro no verifica el correo y no hay recuperación de contraseña. El listado no tiene búsqueda ni filtros.
 - **Listado:** no permite elegir el orden.
 - **Formulario:** no avisa al salir con cambios sin guardar. El precio llega a 9.999.999.999.999,99 porque por encima JavaScript pierde centavos.
 - **Despliegue:** falta configurar el proxy de `/api` y un paso que aplique los scripts.
@@ -132,7 +146,7 @@ Abreviaturas: `DOM`, `APL`, `INF` y `API` son los proyectos `Backend/src/Inventa
 
 ### Agregar un campo a Producto
 
-1. `INF/Persistencia/Scripts/004_nombre.sql` (nuevo): `ALTER TABLE dbo.Productos ADD ...`. Si es obligatorio, con `DEFAULT` para las filas existentes. Se incrusta solo.
+1. `INF/Persistencia/Scripts/005_nombre.sql` (nuevo): `ALTER TABLE dbo.Productos ADD ...`. Si es obligatorio, con `DEFAULT` para las filas existentes. Se incrusta solo.
 2. `DOM/Productos/Producto.cs`: constante de longitud, propiedad, constructor, `Reconstruir` y `Actualizar`.
 3. `APL/Productos/Dtos`: `ProductoDto.cs`, `SolicitudCrearProducto.cs` y `SolicitudActualizarProducto.cs`; `ProductoResumenDto.cs` si va en el listado.
 4. `APL/Productos/Mapeos/MapeoProducto.cs`.
@@ -176,7 +190,7 @@ Abreviaturas: `DOM`, `APL`, `INF` y `API` son los proyectos `Backend/src/Inventa
 3. `INF/Configuracion/OpcionesSemilla.cs`, `.env.example`, `.env` y los valores de prueba en `PRU/Api/FabricaApi.cs` y `PRU/Infraestructura/OpcionesPruebas.cs`, si tendrá usuario inicial.
 4. `API/Productos/ProductosController.cs`: `[Authorize(Roles = ...)]` de cada acción. Un rol nuevo ya puede leer, porque el controller solo exige sesión.
 5. `NUC/modelos/sesion.ts` (`Rol`) y `NUC/servicios/lector-token.ts` (`ROLES`); si falta aquí, el frontend rechaza el token.
-6. `NUC/servicios/servicio-autenticacion.ts`: señal como `esAdministrador`. Si protege rutas, una guardia en `NUC/guardias` y su uso en `PROD/rutas-productos.ts`.
+6. `NUC/servicios/servicio-autenticacion.ts`: señal como `esAdministrador`. Si protege rutas, una guardia en `NUC/guardias` y su uso en `PROD/rutas-productos.ts`. En `Frontend/src/app/funcionalidades/usuarios/pagina-formulario-usuario`, la lista `roles`.
 7. Pruebas: `PRU/Dominio/UsuarioPruebas.cs`, `PRU/Infraestructura/EsquemaPruebas.cs`, `PRU/Infraestructura/SemillaPruebas.cs`, `PRU/Api/ProductosApiPruebas.cs`, `NUC/guardias/guardias.spec.ts` y `NUC/servicios/servicio-autenticacion.spec.ts`.
 
 El token ya lleva el rol, así que `ServicioToken` no cambia.

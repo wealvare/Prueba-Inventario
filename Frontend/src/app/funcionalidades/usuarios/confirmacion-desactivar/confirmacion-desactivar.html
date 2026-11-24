@@ -1,0 +1,16 @@
+<app-dialogo titulo="Desactivar usuario" (cerrado)="cancelar()">
+  <p>
+    <strong class="text-neutral-900">{{ nombre() }}</strong> ya no podrá iniciar sesión. Su cuenta
+    se conserva y puedes reactivarla al editarla.
+  </p>
+  <button acciones type="button" class="boton-secundario" (click)="cancelar()">Cancelar</button>
+  <button
+    acciones
+    type="button"
+    class="boton-peligro"
+    [disabled]="desactivando()"
+    (click)="desactivar()"
+  >
+    {{ desactivando() ? 'Desactivando…' : 'Desactivar' }}
+  </button>
+</app-dialogo>

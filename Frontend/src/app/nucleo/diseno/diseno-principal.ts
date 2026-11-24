@@ -11,6 +11,7 @@ export class DisenoPrincipal {
   private readonly autenticacion = inject(ServicioAutenticacion);
 
   protected readonly usuario = this.autenticacion.usuarioActual;
+  protected readonly esAdministrador = this.autenticacion.esAdministrador;
   protected readonly menuAbierto = signal(false);
 
   protected alternarMenu(): void {

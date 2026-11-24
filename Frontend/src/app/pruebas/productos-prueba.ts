@@ -1,8 +1,5 @@
-import {
-  Producto,
-  ProductoResumen,
-  ResultadoPaginado,
-} from '../funcionalidades/productos/modelos/producto';
+import { ResultadoPaginado } from '../compartido/modelos/resultado-paginado';
+import { Producto, ProductoResumen } from '../funcionalidades/productos/modelos/producto';
 
 export const PRODUCTO: Producto = {
   id: 7,

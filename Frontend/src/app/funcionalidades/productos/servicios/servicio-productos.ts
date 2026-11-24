@@ -2,12 +2,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { entorno } from '../../../../entornos/entorno';
+import { ResultadoPaginado } from '../../../compartido/modelos/resultado-paginado';
 import { mostrarEnPantalla } from '../../../nucleo/interceptores/errores-en-pantalla';
 import {
   FiltroProductos,
   Producto,
   ProductoResumen,
-  ResultadoPaginado,
   SolicitudActualizarProducto,
   SolicitudCrearProducto,
 } from '../modelos/producto';

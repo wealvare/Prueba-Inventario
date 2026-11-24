@@ -10,14 +10,6 @@ export interface FiltroProductos {
   precioMaximo: number | null;
 }
 
-export interface ResultadoPaginado<T> {
-  elementos: T[];
-  pagina: number;
-  tamanoPagina: number;
-  totalElementos: number;
-  totalPaginas: number;
-}
-
 export interface ProductoResumen {
   id: number;
   codigo: string;

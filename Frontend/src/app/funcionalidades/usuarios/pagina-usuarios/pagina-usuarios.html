@@ -1,0 +1,112 @@
+<div class="flex flex-wrap items-center justify-between gap-4">
+  <h1 class="titulo">Usuarios</h1>
+  <a routerLink="/usuarios/nuevo" class="boton-principal">Nuevo usuario</a>
+</div>
+
+<section class="mt-10" aria-label="Resultados" [attr.aria-busy]="usuarios.isLoading()">
+  @if (usuarios.error(); as error) {
+    <app-error-carga [error]="error" (reintentar)="usuarios.reload()" />
+  } @else if (usuarios.hasValue()) {
+    @let resultado = usuarios.value();
+    <div
+      class="tarjeta relative hidden overflow-x-auto lg:block"
+      role="region"
+      aria-label="Tabla de usuarios"
+      tabindex="0"
+    >
+      <table class="w-full text-left text-sm">
+        <caption class="sr-only">
+          Listado de usuarios
+        </caption>
+        <thead class="border-b border-neutral-200 text-neutral-500">
+          <tr>
+            <th scope="col" class="celda">Usuario</th>
+            <th scope="col" class="celda">Correo</th>
+            <th scope="col" class="celda">Rol</th>
+            <th scope="col" class="celda">Estado</th>
+            <th scope="col" class="celda"><span class="sr-only">Acciones</span></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-100">
+          @for (usuario of resultado.elementos; track usuario.id) {
+            <tr>
+              <td class="celda font-medium break-all">{{ usuario.nombreUsuario }}</td>
+              <td class="celda break-all">{{ usuario.correo }}</td>
+              <td class="celda">{{ usuario.rol }}</td>
+              <td class="celda"><app-etiqueta-estado [activo]="usuario.activo" /></td>
+              <td class="celda py-1">
+                <ng-container
+                  [ngTemplateOutlet]="acciones"
+                  [ngTemplateOutletContext]="{ $implicit: usuario }"
+                />
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <ul class="grid gap-4 sm:grid-cols-2 lg:hidden">
+      @for (usuario of resultado.elementos; track usuario.id) {
+        <li class="tarjeta p-5 text-sm">
+          <div class="flex items-start justify-between gap-4">
+            <div class="min-w-0">
+              <p class="font-medium break-all text-neutral-900">{{ usuario.nombreUsuario }}</p>
+              <p class="mt-1 break-all text-neutral-500">{{ usuario.correo }}</p>
+            </div>
+            <app-etiqueta-estado [activo]="usuario.activo" />
+          </div>
+          <p class="mt-4">{{ usuario.rol }}</p>
+          <div class="mt-4">
+            <ng-container
+              [ngTemplateOutlet]="acciones"
+              [ngTemplateOutletContext]="{ $implicit: usuario }"
+            />
+          </div>
+        </li>
+      }
+    </ul>
+
+    <app-paginador
+      class="mt-6 block"
+      [pagina]="resultado.pagina"
+      [totalPaginas]="resultado.totalPaginas"
+      [totalElementos]="resultado.totalElementos"
+      (cambiar)="irAPagina($event)"
+    />
+  } @else {
+    <p role="status" class="tarjeta p-10 text-center text-sm text-neutral-600">
+      Cargando usuarios…
+    </p>
+  }
+</section>
+
+<ng-template #acciones let-usuario>
+  <div class="flex gap-4 lg:justify-end">
+    <a
+      class="enlace"
+      [routerLink]="['/usuarios', usuario.id, 'editar']"
+      [attr.aria-label]="'Editar ' + usuario.nombreUsuario"
+      >Editar</a
+    >
+    @if (usuario.activo && usuario.nombreUsuario !== usuarioActual()?.nombreUsuario) {
+      <button
+        type="button"
+        class="enlace-peligro"
+        [attr.aria-label]="'Desactivar ' + usuario.nombreUsuario"
+        (click)="porDesactivar.set(usuario)"
+      >
+        Desactivar
+      </button>
+    }
+  </div>
+</ng-template>
+
+@if (porDesactivar(); as usuario) {
+  <app-confirmacion-desactivar
+    [id]="usuario.id"
+    [nombre]="usuario.nombreUsuario"
+    (desactivado)="alDesactivar()"
+    (cancelado)="porDesactivar.set(null)"
+  />
+}

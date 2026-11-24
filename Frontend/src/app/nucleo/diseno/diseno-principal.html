@@ -32,7 +32,7 @@
       [class.flex]="menuAbierto()"
       [class.hidden]="!menuAbierto()"
     >
-      <nav aria-label="Principal">
+      <nav aria-label="Principal" class="flex flex-col md:flex-row md:gap-6">
         <a
           routerLink="/productos"
           routerLinkActive
@@ -42,6 +42,17 @@
         >
           Productos
         </a>
+        @if (esAdministrador()) {
+          <a
+            routerLink="/usuarios"
+            routerLinkActive
+            ariaCurrentWhenActive="page"
+            class="inline-flex min-h-11 items-center text-sm font-medium text-neutral-600 hover:text-acento aria-[current=page]:text-acento"
+            (click)="cerrarMenu()"
+          >
+            Usuarios
+          </a>
+        }
       </nav>
 
       @if (usuario(); as actual) {

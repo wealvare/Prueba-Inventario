@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { guardiaAdministrador } from './nucleo/guardias/guardia-administrador';
 import { guardiaAnonimo } from './nucleo/guardias/guardia-anonimo';
 import { guardiaAutenticado } from './nucleo/guardias/guardia-autenticado';
 
@@ -30,6 +31,12 @@ export const routes: Routes = [
         path: 'productos',
         loadChildren: () =>
           import('./funcionalidades/productos/rutas-productos').then((m) => m.rutasProductos),
+      },
+      {
+        path: 'usuarios',
+        canActivate: [guardiaAdministrador],
+        loadChildren: () =>
+          import('./funcionalidades/usuarios/rutas-usuarios').then((m) => m.rutasUsuarios),
       },
     ],
   },

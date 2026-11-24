@@ -1,0 +1,91 @@
+<a class="enlace" routerLink="/usuarios">← Volver</a>
+<h1 class="titulo mt-6">{{ id() === undefined ? 'Nuevo usuario' : 'Editar usuario' }}</h1>
+
+@if (cargando()) {
+  <p role="status" class="tarjeta mt-8 p-10 text-center text-sm text-neutral-600">
+    Cargando usuario…
+  </p>
+} @else if (errorCarga(); as error) {
+  <app-error-carga class="mt-8 block" [error]="error" (reintentar)="recargar()" />
+} @else {
+  <form
+    class="mt-8 flex flex-col gap-10"
+    novalidate
+    [formGroup]="formulario"
+    (ngSubmit)="guardar()"
+  >
+    <div class="tarjeta grid gap-5 p-4 sm:grid-cols-2 sm:p-6">
+      <app-campo idControl="nombreUsuario" etiqueta="Usuario" [error]="mensaje('nombreUsuario')">
+        <input
+          id="nombreUsuario"
+          type="text"
+          class="campo"
+          autocomplete="off"
+          aria-describedby="nombreUsuario-error"
+          formControlName="nombreUsuario"
+          [attr.aria-invalid]="mensaje('nombreUsuario') !== null"
+        />
+      </app-campo>
+
+      <app-campo idControl="correo" etiqueta="Correo" [error]="mensaje('correo')">
+        <input
+          id="correo"
+          type="email"
+          class="campo"
+          autocomplete="off"
+          aria-describedby="correo-error"
+          formControlName="correo"
+          [attr.aria-invalid]="mensaje('correo') !== null"
+        />
+      </app-campo>
+
+      <app-campo
+        idControl="contrasena"
+        [etiqueta]="id() === undefined ? 'Contraseña' : 'Nueva contraseña (opcional)'"
+        [error]="mensaje('contrasena')"
+      >
+        <input
+          id="contrasena"
+          type="password"
+          class="campo"
+          autocomplete="new-password"
+          aria-describedby="contrasena-error"
+          formControlName="contrasena"
+          [attr.aria-invalid]="mensaje('contrasena') !== null"
+        />
+      </app-campo>
+
+      <app-campo idControl="rol" etiqueta="Rol" [error]="mensaje('rol')">
+        <select
+          id="rol"
+          class="campo"
+          aria-describedby="rol-error"
+          formControlName="rol"
+          [attr.aria-invalid]="mensaje('rol') !== null"
+        >
+          @for (rol of roles; track rol) {
+            <option [value]="rol">{{ rol }}</option>
+          }
+        </select>
+      </app-campo>
+
+      @if (id() !== undefined) {
+        <label class="flex min-h-11 items-center gap-3 text-sm font-medium">
+          <input type="checkbox" class="size-5 accent-acento" formControlName="activo" />
+          Usuario activo
+        </label>
+      }
+    </div>
+
+    @if (errorGeneral(); as error) {
+      <p role="alert" class="aviso-error">{{ error }}</p>
+    }
+
+    <div class="flex flex-wrap gap-3">
+      <button type="submit" class="boton-principal" [disabled]="guardando()">
+        {{ guardando() ? 'Guardando…' : 'Guardar' }}
+      </button>
+      <a class="boton-secundario" routerLink="/usuarios">Cancelar</a>
+    </div>
+  </form>
+}

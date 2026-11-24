@@ -15,8 +15,6 @@ public sealed class RepositorioProductos(IFabricaConexion fabrica, EjecutorTrans
 {
     private const string IndiceCodigo = "UX_Productos_Codigo";
     private const string IndiceNumeroLote = "UX_LotesProducto_ProductoId_NumeroLote";
-    private const int IndiceUnicoDuplicado = 2601;
-    private const int RestriccionUnicaDuplicada = 2627;
 
     public async Task<Producto?> ObtenerPorIdAsync(int id, CancellationToken cancelacion)
     {
@@ -160,11 +158,11 @@ public sealed class RepositorioProductos(IFabricaConexion fabrica, EjecutorTrans
         {
             await ejecutor.EjecutarAsync(operacion, cancelacion);
         }
-        catch (SqlException error) when (EsDuplicado(error, IndiceCodigo))
+        catch (SqlException error) when (error.EsDuplicado(IndiceCodigo))
         {
             throw new ExcepcionCodigoDuplicado(producto.Codigo);
         }
-        catch (SqlException error) when (EsDuplicado(error, IndiceNumeroLote))
+        catch (SqlException error) when (error.EsDuplicado(IndiceNumeroLote))
         {
             throw new ExcepcionLoteDuplicado(NumeroLoteDuplicado(error, producto));
         }
@@ -185,8 +183,4 @@ public sealed class RepositorioProductos(IFabricaConexion fabrica, EjecutorTrans
             .Select(lote => lote.NumeroLote)
             .FirstOrDefault(numero => error.Message.Contains($", {numero})", StringComparison.OrdinalIgnoreCase))
         ?? string.Empty;
-
-    private static bool EsDuplicado(SqlException error, string indice) =>
-        error.Number is IndiceUnicoDuplicado or RestriccionUnicaDuplicada
-        && error.Message.Contains(indice, StringComparison.OrdinalIgnoreCase);
 }

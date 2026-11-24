@@ -52,7 +52,7 @@ public sealed class SemillaPruebas(BaseDatosFixture baseDatos)
         await inicializador.EjecutarAsync(default);
         await inicializador.EjecutarAsync(default);
 
-        var usuarios = new RepositorioUsuarios(fabrica);
+        var usuarios = new RepositorioUsuarios(fabrica, new EjecutorTransaccion(fabrica));
         var administrador = await usuarios.ObtenerPorNombreUsuarioAsync("admin", default);
         var consulta = await usuarios.ObtenerPorNombreUsuarioAsync("consulta", default);
         Assert.Equal((2, 15, 35), await ContarAsync(fabrica));

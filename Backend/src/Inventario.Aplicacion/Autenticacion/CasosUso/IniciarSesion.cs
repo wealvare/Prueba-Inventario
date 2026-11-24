@@ -2,6 +2,7 @@ using FluentValidation;
 using Inventario.Aplicacion.Autenticacion.Dtos;
 using Inventario.Aplicacion.Autenticacion.Puertos.Entrada;
 using Inventario.Aplicacion.Autenticacion.Puertos.Salida;
+using Inventario.Aplicacion.Usuarios.Puertos.Salida;
 using Inventario.Dominio.Excepciones;
 
 namespace Inventario.Aplicacion.Autenticacion.CasosUso;
@@ -21,7 +22,7 @@ public sealed class IniciarSesion(
         var contrasenaValida = hasheador.Verificar(
             solicitud.Contrasena, usuario?.HashContrasena ?? hasheador.HashFicticio);
 
-        if (usuario is null || !contrasenaValida)
+        if (usuario is not { Activo: true } || !contrasenaValida)
             throw new ExcepcionCredencialesInvalidas();
 
         var token = servicioToken.Generar(usuario);

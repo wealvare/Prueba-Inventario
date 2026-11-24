@@ -3,6 +3,7 @@ using Inventario.Aplicacion.Autenticacion.CasosUso;
 using Inventario.Aplicacion.Autenticacion.Dtos;
 using Inventario.Aplicacion.Autenticacion.Puertos.Salida;
 using Inventario.Aplicacion.Autenticacion.Validadores;
+using Inventario.Aplicacion.Usuarios.Puertos.Salida;
 using Inventario.Dominio.Excepciones;
 using Inventario.Dominio.Usuarios;
 using NSubstitute;

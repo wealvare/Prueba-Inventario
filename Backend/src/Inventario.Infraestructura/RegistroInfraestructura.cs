@@ -1,5 +1,6 @@
 using Inventario.Aplicacion.Autenticacion.Puertos.Salida;
 using Inventario.Aplicacion.Productos.Puertos.Salida;
+using Inventario.Aplicacion.Usuarios.Puertos.Salida;
 using Inventario.Infraestructura.Configuracion;
 using Inventario.Infraestructura.Persistencia;
 using Inventario.Infraestructura.Persistencia.Conexion;

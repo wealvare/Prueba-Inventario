@@ -148,7 +148,7 @@ function Preparar-Entorno {
         'UsuariosIniciales__Consulta__Correo',
         'UsuariosIniciales__Consulta__Contrasena') | Where-Object { -not (Obtener-Variable $_) }
     if ($vacias) {
-        throw "Completa estas variables en .env: $($vacias -join ', '). Si tu .env es anterior al cambio de nombres, consulta «Migrar un .env existente» en README.md."
+        throw "Completa estas variables en .env: $($vacias -join ', '). Si tu .env es anterior al cambio de nombres, renómbralas según .env.example."
     }
 }
 

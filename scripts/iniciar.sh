@@ -167,7 +167,7 @@ preparar_entorno() {
     fi
   done
   if [ -n "$vacias" ]; then
-    fallar "Completa estas variables en .env:$vacias. Si tu .env es anterior al cambio de nombres, consulta «Migrar un .env existente» en README.md."
+    fallar "Completa estas variables en .env:$vacias. Si tu .env es anterior al cambio de nombres, renómbralas según .env.example."
   fi
 }
 

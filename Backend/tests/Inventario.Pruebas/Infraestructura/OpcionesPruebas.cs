@@ -81,6 +81,6 @@ public sealed class OpcionesPruebas
 
         Assert.Contains(
             "UsuariosIniciales__Administrador__Correo, UsuariosIniciales__Consulta__NombreUsuario", error.Message);
-        Assert.Contains("README.md", error.Message);
+        Assert.Contains(".env.example", error.Message);
     }
 }

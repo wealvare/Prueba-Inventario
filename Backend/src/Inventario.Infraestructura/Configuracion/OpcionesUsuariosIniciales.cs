@@ -32,7 +32,7 @@ public sealed record OpcionesUsuariosIniciales(IReadOnlyList<UsuarioInicial> Usu
         if (faltantes.Count > 0)
             throw new ExcepcionConfiguracion(
                 $"Faltan estas variables en .env: {string.Join(", ", faltantes)}. "
-                + "Si tu .env es anterior al cambio de nombres, consulta «Migrar un .env existente» en README.md.");
+                + "Si tu .env es anterior al cambio de nombres, renómbralas según .env.example.");
     }
 
     private static UsuarioInicial LeerUsuario(IConfiguration configuracion, RolUsuario rol)

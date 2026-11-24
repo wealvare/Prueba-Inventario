@@ -1,0 +1,38 @@
+<main class="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-4 py-12">
+  <h1 class="text-2xl font-semibold tracking-tight text-neutral-900">Inventario</h1>
+  <p class="mt-2 text-sm text-neutral-600">Inicia sesión para continuar.</p>
+
+  <form class="mt-8 flex flex-col gap-5" [formGroup]="formulario" (ngSubmit)="iniciarSesion()">
+    <label class="flex flex-col gap-2 text-sm font-medium">
+      Usuario
+      <input
+        type="text"
+        formControlName="nombreUsuario"
+        autocomplete="username"
+        class="rounded-lg border border-neutral-300 bg-white px-3 py-2.5 font-normal"
+      />
+    </label>
+
+    <label class="flex flex-col gap-2 text-sm font-medium">
+      Contraseña
+      <input
+        type="password"
+        formControlName="contrasena"
+        autocomplete="current-password"
+        class="rounded-lg border border-neutral-300 bg-white px-3 py-2.5 font-normal"
+      />
+    </label>
+
+    @if (faltanDatos()) {
+      <p role="alert" class="text-sm text-red-700">Escribe tu usuario y tu contraseña.</p>
+    }
+
+    <button
+      type="submit"
+      class="rounded-lg bg-acento px-4 py-2.5 text-sm font-medium text-white hover:bg-acento-fuerte disabled:opacity-60"
+      [disabled]="enviando()"
+    >
+      {{ enviando() ? 'Ingresando…' : 'Ingresar' }}
+    </button>
+  </form>
+</main>

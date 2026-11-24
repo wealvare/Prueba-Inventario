@@ -1,0 +1,71 @@
+<a
+  href="#contenido"
+  class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-20 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2"
+  (click)="$event.preventDefault(); contenido.focus()"
+>
+  Ir al contenido
+</a>
+
+<header class="border-b border-neutral-200 bg-white" (keydown.escape)="cerrarMenu()">
+  <div
+    class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-8 px-4 py-4 sm:px-6"
+  >
+    <a routerLink="/productos" class="text-lg font-semibold tracking-tight text-neutral-900"
+      >Inventario</a
+    >
+
+    <button
+      type="button"
+      class="rounded-lg border border-neutral-200 px-3 py-2 text-sm md:hidden"
+      aria-controls="menu-principal"
+      [attr.aria-expanded]="menuAbierto()"
+      (click)="alternarMenu()"
+    >
+      {{ menuAbierto() ? 'Cerrar' : 'Menú' }}
+    </button>
+
+    <div
+      id="menu-principal"
+      class="w-full flex-col gap-4 pt-4 md:flex md:w-auto md:flex-1 md:flex-row md:items-center md:justify-between md:pt-0"
+      [class.flex]="menuAbierto()"
+      [class.hidden]="!menuAbierto()"
+    >
+      <nav aria-label="Principal">
+        <a
+          routerLink="/productos"
+          routerLinkActive
+          ariaCurrentWhenActive="page"
+          class="text-sm font-medium text-neutral-600 hover:text-acento aria-[current=page]:text-acento"
+          (click)="cerrarMenu()"
+        >
+          Productos
+        </a>
+      </nav>
+
+      @if (usuario(); as actual) {
+        <div class="flex items-center justify-between gap-4 text-sm">
+          <span class="min-w-0 truncate">
+            <span class="font-medium text-neutral-900">{{ actual.nombreUsuario }}</span>
+            <span class="ml-2 text-neutral-500">{{ actual.rol }}</span>
+          </span>
+          <button
+            type="button"
+            class="rounded-lg border border-neutral-200 px-3 py-2 hover:border-acento hover:text-acento"
+            (click)="salir()"
+          >
+            Salir
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</header>
+
+<main
+  #contenido
+  id="contenido"
+  tabindex="-1"
+  class="mx-auto max-w-6xl px-4 py-10 outline-none sm:px-6 sm:py-14"
+>
+  <router-outlet />
+</main>

@@ -17,9 +17,10 @@ public sealed class EsquemaPruebas(BaseDatosFixture baseDatos)
         var scripts = (await conexion.QueryAsync<string>(
             "SELECT ScriptName FROM dbo.VersionesEsquema ORDER BY Id")).AsList();
 
-        Assert.Equal(2, scripts.Count);
+        Assert.Equal(3, scripts.Count);
         Assert.EndsWith("001_crear_tablas.sql", scripts[0]);
         Assert.EndsWith("002_indices.sql", scripts[1]);
+        Assert.EndsWith("003_indices_listado.sql", scripts[2]);
     }
 
     [Theory]
@@ -42,6 +43,9 @@ public sealed class EsquemaPruebas(BaseDatosFixture baseDatos)
     [InlineData("UX_Productos_Codigo", true)]
     [InlineData("UX_LotesProducto_ProductoId_NumeroLote", true)]
     [InlineData("IX_LotesProducto_FechaIngreso", false)]
+    [InlineData("IX_Productos_Activo_Nombre", false)]
+    [InlineData("IX_Productos_Categoria_Activo_Nombre", false)]
+    [InlineData("IX_Productos_Activo_Categoria", false)]
     public async Task Indices_Existen(string indice, bool unico)
     {
         await using var conexion = await baseDatos.Fabrica.AbrirAsync(default);

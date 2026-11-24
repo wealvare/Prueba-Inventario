@@ -70,19 +70,24 @@ internal static class SqlProductos
         FROM dbo.Productos AS producto
         WHERE {condiciones};
 
-        SELECT producto.Id, producto.Codigo, producto.Nombre, producto.Categoria, producto.Activo,
+        WITH pagina AS (
+            SELECT producto.Id, producto.Codigo, producto.Nombre, producto.Categoria, producto.Activo
+            FROM dbo.Productos AS producto
+            WHERE {condiciones}
+            ORDER BY producto.Nombre, producto.Id
+            OFFSET @desplazamiento ROWS FETCH NEXT @tamanoPagina ROWS ONLY
+        )
+        SELECT pagina.Id, pagina.Codigo, pagina.Nombre, pagina.Categoria, pagina.Activo,
             resumen.CantidadLotes, resumen.CantidadTotal, resumen.PrecioMinimo, resumen.PrecioMaximo
-        FROM dbo.Productos AS producto
+        FROM pagina
         OUTER APPLY (
             SELECT COUNT(*) AS CantidadLotes,
                 COALESCE(SUM(CAST(lote.Cantidad AS BIGINT)), 0) AS CantidadTotal,
                 MIN(lote.Precio) AS PrecioMinimo,
                 MAX(lote.Precio) AS PrecioMaximo
             FROM dbo.LotesProducto AS lote
-            WHERE lote.ProductoId = producto.Id
+            WHERE lote.ProductoId = pagina.Id
         ) AS resumen
-        WHERE {condiciones}
-        ORDER BY producto.Nombre, producto.Id
-        OFFSET @desplazamiento ROWS FETCH NEXT @tamanoPagina ROWS ONLY;
+        ORDER BY pagina.Nombre, pagina.Id;
         """;
 }

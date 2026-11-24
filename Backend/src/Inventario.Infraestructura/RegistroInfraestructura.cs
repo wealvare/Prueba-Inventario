@@ -4,8 +4,8 @@ using Inventario.Aplicacion.Usuarios.Puertos.Salida;
 using Inventario.Infraestructura.Configuracion;
 using Inventario.Infraestructura.Persistencia;
 using Inventario.Infraestructura.Persistencia.Conexion;
+using Inventario.Infraestructura.Persistencia.DatosIniciales;
 using Inventario.Infraestructura.Persistencia.Productos;
-using Inventario.Infraestructura.Persistencia.Semilla;
 using Inventario.Infraestructura.Persistencia.Usuarios;
 using Inventario.Infraestructura.Seguridad;
 using Microsoft.Extensions.Configuration;
@@ -37,9 +37,9 @@ public static class RegistroInfraestructura
         this IServiceCollection servicios,
         IConfiguration configuracion)
     {
-        servicios.AddSingleton(OpcionesSemilla.Leer(configuracion));
+        servicios.AddSingleton(OpcionesUsuariosIniciales.Leer(configuracion));
         servicios.AddSingleton<MigradorEsquema>();
-        servicios.AddScoped<SembradorDatos>();
+        servicios.AddScoped<CargadorDatosIniciales>();
         servicios.AddScoped<InicializadorBaseDatos>();
 
         return servicios;

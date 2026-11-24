@@ -6,12 +6,12 @@ using Inventario.Infraestructura.Configuracion;
 using Inventario.Infraestructura.Persistencia.Conexion;
 using Inventario.Infraestructura.Persistencia.Productos;
 
-namespace Inventario.Infraestructura.Persistencia.Semilla;
+namespace Inventario.Infraestructura.Persistencia.DatosIniciales;
 
-public sealed class SembradorDatos(
+public sealed class CargadorDatosIniciales(
     EjecutorTransaccion ejecutor,
     IHasheadorContrasena hasheador,
-    OpcionesSemilla opciones)
+    OpcionesUsuariosIniciales opciones)
 {
     private const string ExisteUsuario = """
         SELECT CAST(CASE WHEN EXISTS (
@@ -30,22 +30,22 @@ public sealed class SembradorDatos(
 
     public Task EjecutarAsync(CancellationToken cancelacion) => ejecutor.EjecutarAsync(async transaccion =>
     {
-        await SembrarUsuariosAsync(transaccion, cancelacion);
-        await SembrarProductosAsync(transaccion, cancelacion);
+        await CargarUsuariosAsync(transaccion, cancelacion);
+        await CargarProductosAsync(transaccion, cancelacion);
     }, cancelacion);
 
-    private async Task SembrarUsuariosAsync(DbTransaction transaccion, CancellationToken cancelacion)
+    private async Task CargarUsuariosAsync(DbTransaction transaccion, CancellationToken cancelacion)
     {
         var conexion = transaccion.Connection!;
 
-        foreach (var semilla in opciones.Usuarios)
+        foreach (var inicial in opciones.Usuarios)
         {
             if (await conexion.ExecuteScalarAsync<bool>(new CommandDefinition(
-                ExisteUsuario, new { semilla.NombreUsuario }, transaccion, cancellationToken: cancelacion)))
+                ExisteUsuario, new { inicial.NombreUsuario }, transaccion, cancellationToken: cancelacion)))
                 continue;
 
             var usuario = new Usuario(
-                semilla.NombreUsuario, semilla.Correo, hasheador.Hashear(semilla.Contrasena), semilla.Rol);
+                inicial.NombreUsuario, inicial.Correo, hasheador.Hashear(inicial.Contrasena), inicial.Rol);
 
             await conexion.ExecuteAsync(new CommandDefinition(
                 InsertarUsuario,
@@ -55,13 +55,13 @@ public sealed class SembradorDatos(
         }
     }
 
-    private static async Task SembrarProductosAsync(DbTransaction transaccion, CancellationToken cancelacion)
+    private static async Task CargarProductosAsync(DbTransaction transaccion, CancellationToken cancelacion)
     {
         if (await transaccion.Connection!.ExecuteScalarAsync<bool>(
             new CommandDefinition(HayProductos, transaction: transaccion, cancellationToken: cancelacion)))
             return;
 
-        foreach (var producto in CatalogoSemilla.Crear())
+        foreach (var producto in CatalogoInicial.Crear())
             await RepositorioProductos.InsertarAsync(producto, transaccion, cancelacion);
     }
 }

@@ -69,10 +69,25 @@ Se crean al iniciar la Api con los valores de `.env`:
 
 | Rol | Usuario | Contraseña |
 |---|---|---|
-| Administrador | `Semilla__Administrador__NombreUsuario` | `Semilla__Administrador__Contrasena` |
-| Consulta | `Semilla__Consulta__NombreUsuario` | `Semilla__Consulta__Contrasena` |
+| Administrador | `UsuariosIniciales__Administrador__NombreUsuario` | `UsuariosIniciales__Administrador__Contrasena` |
+| Consulta | `UsuariosIniciales__Consulta__NombreUsuario` | `UsuariosIniciales__Consulta__Contrasena` |
 
 Son credenciales solo para demostración. Los usuarios se crean si no existen: cambiar después `.env` no modifica los ya guardados. Para aplicarlo, reinicia con datos limpios.
+
+### Migrar un .env existente
+
+Las variables de los usuarios iniciales cambiaron de nombre. Si tu `.env` es anterior, renómbralas sin cambiar sus valores:
+
+| Nombre anterior | Nombre nuevo |
+|---|---|
+| `Semilla__Administrador__NombreUsuario` | `UsuariosIniciales__Administrador__NombreUsuario` |
+| `Semilla__Administrador__Correo` | `UsuariosIniciales__Administrador__Correo` |
+| `Semilla__Administrador__Contrasena` | `UsuariosIniciales__Administrador__Contrasena` |
+| `Semilla__Consulta__NombreUsuario` | `UsuariosIniciales__Consulta__NombreUsuario` |
+| `Semilla__Consulta__Correo` | `UsuariosIniciales__Consulta__Correo` |
+| `Semilla__Consulta__Contrasena` | `UsuariosIniciales__Consulta__Contrasena` |
+
+Si falta alguna, el arranque se detiene e indica cuáles.
 
 ## Detener y reiniciar
 
@@ -233,7 +248,7 @@ Los errores se devuelven como `application/problem+json`. El valor `correlacion`
 │   ├── src
 │   │   ├── Inventario.Dominio           Entidades y reglas de negocio
 │   │   ├── Inventario.Aplicacion        Casos de uso, puertos, DTO y validadores
-│   │   ├── Inventario.Infraestructura   Dapper, scripts SQL, semilla, JWT y BCrypt
+│   │   ├── Inventario.Infraestructura   Dapper, scripts SQL, datos iniciales, JWT y BCrypt
 │   │   └── Inventario.Api               Controllers, errores, registros y Swagger
 │   └── tests
 │       └── Inventario.Pruebas           Unitarias y de integración
@@ -258,4 +273,4 @@ El esquema se versiona con scripts numerados en `Backend/src/Inventario.Infraest
 
 Pendiente de configurar. En producción, el frontend llama a la ruta relativa `/api`: publica ambos bajo el mismo dominio con un proxy que dirija `/api` a la Api, o cambia `urlApi` en `Frontend/src/entornos/entorno.produccion.ts` y agrega el origen del frontend a `Cors__OrigenesPermitidos__0`.
 
-Fuera de desarrollo, la Api no aplica los scripts ni carga la semilla, y Swagger no se publica.
+Fuera de desarrollo, la Api no aplica los scripts ni carga los datos iniciales, y Swagger no se publica.

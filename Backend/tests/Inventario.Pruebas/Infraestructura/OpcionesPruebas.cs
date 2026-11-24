@@ -18,12 +18,12 @@ public sealed class OpcionesPruebas
         ["Jwt:Emisor"] = "emisor",
         ["Jwt:Audiencia"] = "audiencia",
         ["Jwt:MinutosExpiracion"] = "60",
-        ["Semilla:Administrador:NombreUsuario"] = "admin",
-        ["Semilla:Administrador:Correo"] = "admin@inventario.local",
-        ["Semilla:Administrador:Contrasena"] = "contrasena-a",
-        ["Semilla:Consulta:NombreUsuario"] = "consulta",
-        ["Semilla:Consulta:Correo"] = "consulta@inventario.local",
-        ["Semilla:Consulta:Contrasena"] = "contrasena-c"
+        ["UsuariosIniciales:Administrador:NombreUsuario"] = "admin",
+        ["UsuariosIniciales:Administrador:Correo"] = "admin@inventario.local",
+        ["UsuariosIniciales:Administrador:Contrasena"] = "contrasena-a",
+        ["UsuariosIniciales:Consulta:NombreUsuario"] = "consulta",
+        ["UsuariosIniciales:Consulta:Correo"] = "consulta@inventario.local",
+        ["UsuariosIniciales:Consulta:Contrasena"] = "contrasena-c"
     };
 
     private IConfiguration Configuracion => new ConfigurationBuilder().AddInMemoryCollection(_valores).Build();
@@ -52,22 +52,35 @@ public sealed class OpcionesPruebas
     {
         _valores[clave] = valor;
 
-        Assert.Throws<InvalidOperationException>(() => OpcionesJwt.Leer(Configuracion));
+        Assert.Throws<ExcepcionConfiguracion>(() => OpcionesJwt.Leer(Configuracion));
     }
 
     [Fact]
-    public void Semilla_LeeUnUsuarioPorRol() =>
+    public void UsuariosIniciales_LeeUnUsuarioPorRol() =>
         Assert.Equal(
             [RolUsuario.Administrador, RolUsuario.Consulta],
-            OpcionesSemilla.Leer(Configuracion).Usuarios.Select(usuario => usuario.Rol));
+            OpcionesUsuariosIniciales.Leer(Configuracion).Usuarios.Select(usuario => usuario.Rol));
 
     [Theory]
     [InlineData("")]
     [InlineData("corta")]
-    public void Semilla_ConContrasenaInvalida_Falla(string contrasena)
+    public void UsuariosIniciales_ConContrasenaInvalida_Falla(string contrasena)
     {
-        _valores["Semilla:Consulta:Contrasena"] = contrasena;
+        _valores["UsuariosIniciales:Consulta:Contrasena"] = contrasena;
 
-        Assert.Throws<InvalidOperationException>(() => OpcionesSemilla.Leer(Configuracion));
+        Assert.Throws<ExcepcionConfiguracion>(() => OpcionesUsuariosIniciales.Leer(Configuracion));
+    }
+
+    [Fact]
+    public void UsuariosIniciales_SinVariables_FallaNombrandoTodasLasQueFaltan()
+    {
+        _valores.Remove("UsuariosIniciales:Administrador:Correo");
+        _valores.Remove("UsuariosIniciales:Consulta:NombreUsuario");
+
+        var error = Assert.Throws<ExcepcionConfiguracion>(() => OpcionesUsuariosIniciales.Leer(Configuracion));
+
+        Assert.Contains(
+            "UsuariosIniciales__Administrador__Correo, UsuariosIniciales__Consulta__NombreUsuario", error.Message);
+        Assert.Contains("README.md", error.Message);
     }
 }

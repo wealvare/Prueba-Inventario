@@ -158,14 +158,14 @@ preparar_entorno() {
   fi
 
   for variable in BaseDatos__Contrasena Jwt__Clave \
-    Semilla__Administrador__NombreUsuario Semilla__Administrador__Contrasena \
-    Semilla__Consulta__NombreUsuario Semilla__Consulta__Contrasena; do
+    UsuariosIniciales__Administrador__NombreUsuario UsuariosIniciales__Administrador__Correo \n    UsuariosIniciales__Administrador__Contrasena \
+    UsuariosIniciales__Consulta__NombreUsuario UsuariosIniciales__Consulta__Correo \n    UsuariosIniciales__Consulta__Contrasena; do
     if [ -z "$(obtener_variable "$variable")" ]; then
       vacias+=" $variable"
     fi
   done
   if [ -n "$vacias" ]; then
-    fallar "Completa estas variables en .env:$vacias."
+    fallar "Completa estas variables en .env:$vacias. Si tu .env es anterior al cambio de nombres, consulta «Migrar un .env existente» en README.md."
   fi
 }
 
@@ -296,7 +296,7 @@ mostrar_resumen() {
   echo "  Api       $url_api/api"
   echo "  Swagger   $url_api/swagger"
   echo "  Estado    $url_api/salud"
-  echo 'Los usuarios de demostración están en las variables Semilla__* de .env.'
+  echo 'Los usuarios de demostración están en las variables UsuariosIniciales__* de .env.'
   echo 'Para detener todo: scripts/detener.sh'
 }
 

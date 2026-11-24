@@ -1,8 +1,8 @@
 using Inventario.Dominio.Productos;
 
-namespace Inventario.Infraestructura.Persistencia.Semilla;
+namespace Inventario.Infraestructura.Persistencia.DatosIniciales;
 
-internal static class CatalogoSemilla
+internal static class CatalogoInicial
 {
     private static readonly DateOnly FechaBase = new(2026, 1, 10);
 

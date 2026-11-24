@@ -16,7 +16,7 @@ public sealed record OpcionesJwt(string Clave, string Emisor, string Audiencia, 
             configuracion.EnteroPositivo("Jwt:MinutosExpiracion"));
 
         if (Encoding.UTF8.GetByteCount(opciones.Clave) < BytesMinimosClave)
-            throw new InvalidOperationException($"La clave JWT debe tener al menos {BytesMinimosClave} bytes.");
+            throw new ExcepcionConfiguracion($"La clave JWT debe tener al menos {BytesMinimosClave} bytes.");
 
         return opciones;
     }

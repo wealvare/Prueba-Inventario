@@ -69,12 +69,12 @@ public sealed class FabricaApi : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseSetting("Jwt:Emisor", Emisor);
         builder.UseSetting("Jwt:Audiencia", Audiencia);
         builder.UseSetting("Jwt:MinutosExpiracion", "30");
-        builder.UseSetting("Semilla:Administrador:NombreUsuario", "admin");
-        builder.UseSetting("Semilla:Administrador:Correo", "admin@inventario.local");
-        builder.UseSetting("Semilla:Administrador:Contrasena", ContrasenaAdministrador);
-        builder.UseSetting("Semilla:Consulta:NombreUsuario", "consulta");
-        builder.UseSetting("Semilla:Consulta:Correo", "consulta@inventario.local");
-        builder.UseSetting("Semilla:Consulta:Contrasena", ContrasenaConsulta);
+        builder.UseSetting("UsuariosIniciales:Administrador:NombreUsuario", "admin");
+        builder.UseSetting("UsuariosIniciales:Administrador:Correo", "admin@inventario.local");
+        builder.UseSetting("UsuariosIniciales:Administrador:Contrasena", ContrasenaAdministrador);
+        builder.UseSetting("UsuariosIniciales:Consulta:NombreUsuario", "consulta");
+        builder.UseSetting("UsuariosIniciales:Consulta:Correo", "consulta@inventario.local");
+        builder.UseSetting("UsuariosIniciales:Consulta:Contrasena", ContrasenaConsulta);
         builder.UseSetting("Cors:OrigenesPermitidos:0", OrigenPermitido);
         builder.UseSetting("LimiteInicioSesion:PeticionesPorMinuto", "1000");
         builder.ConfigureServices(servicios => servicios.AddSingleton<ILogEventSink>(Registros));

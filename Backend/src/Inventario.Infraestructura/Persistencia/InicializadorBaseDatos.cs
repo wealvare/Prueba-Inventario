@@ -1,12 +1,12 @@
-using Inventario.Infraestructura.Persistencia.Semilla;
+using Inventario.Infraestructura.Persistencia.DatosIniciales;
 
 namespace Inventario.Infraestructura.Persistencia;
 
-public sealed class InicializadorBaseDatos(MigradorEsquema migrador, SembradorDatos sembrador)
+public sealed class InicializadorBaseDatos(MigradorEsquema migrador, CargadorDatosIniciales cargador)
 {
     public async Task EjecutarAsync(CancellationToken cancelacion)
     {
         migrador.Ejecutar();
-        await sembrador.EjecutarAsync(cancelacion);
+        await cargador.EjecutarAsync(cancelacion);
     }
 }

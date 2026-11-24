@@ -141,12 +141,14 @@ function Preparar-Entorno {
     $vacias = @(
         'BaseDatos__Contrasena',
         'Jwt__Clave',
-        'Semilla__Administrador__NombreUsuario',
-        'Semilla__Administrador__Contrasena',
-        'Semilla__Consulta__NombreUsuario',
-        'Semilla__Consulta__Contrasena') | Where-Object { -not (Obtener-Variable $_) }
+        'UsuariosIniciales__Administrador__NombreUsuario',
+        'UsuariosIniciales__Administrador__Correo',
+        'UsuariosIniciales__Administrador__Contrasena',
+        'UsuariosIniciales__Consulta__NombreUsuario',
+        'UsuariosIniciales__Consulta__Correo',
+        'UsuariosIniciales__Consulta__Contrasena') | Where-Object { -not (Obtener-Variable $_) }
     if ($vacias) {
-        throw "Completa estas variables en .env: $($vacias -join ', ')."
+        throw "Completa estas variables en .env: $($vacias -join ', '). Si tu .env es anterior al cambio de nombres, consulta «Migrar un .env existente» en README.md."
     }
 }
 
@@ -319,7 +321,7 @@ function Mostrar-Resumen {
     Write-Host "  Api       $UrlApi/api"
     Write-Host "  Swagger   $UrlApi/swagger"
     Write-Host "  Estado    $UrlApi/salud"
-    Write-Host 'Los usuarios de demostración están en las variables Semilla__* de .env.'
+    Write-Host 'Los usuarios de demostración están en las variables UsuariosIniciales__* de .env.'
     Write-Host 'Para detener todo: scripts/detener.ps1'
 }
 

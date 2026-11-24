@@ -90,6 +90,12 @@ Se aplica solo sobre HTTP y queda desactivada en HTTPS para no exponer las respu
 
 Se publica solo en desarrollo. La estructura se documenta con atributos y los ejemplos con un filtro, sin comentarios XML en el código.
 
+## Índices del listado
+
+El listado elige primero la página y después resume los lotes solo de esos productos, así su coste no crece con el número de página. `IX_Productos_Activo_Nombre` cubre el filtro por estado, el orden y la búsqueda; `IX_Productos_Categoria_Activo_Nombre`, el filtro por categoría; `IX_Productos_Activo_Categoria`, la lista de categorías; y el índice único de lotes incluye precio y cantidad para el resumen y el rango de precios.
+
+La búsqueda por texto contenido y el listado de todos los estados recorren un índice completo. Es suficiente para este volumen; con mucho más convendría búsqueda de texto completo.
+
 ## Frontend con signals
 
 El estado de sesión y las notificaciones viven en servicios con signals de solo lectura hacia fuera, y los valores derivados se calculan con `computed`. RxJS queda para las peticiones HTTP. No se usa una librería de estado porque no hay estado complejo que compartir.
@@ -121,6 +127,14 @@ La URL es la única fuente del filtro: el formulario navega tras 400 ms sin camb
 ## Formulario de producto
 
 Crear y editar comparten pantalla. Las validaciones reflejan las del backend para responder de inmediato, y la Api sigue siendo la autoridad: sus errores 400 se muestran junto al campo y los 409 como mensaje, sin perder lo escrito. El precio se limita a 9.999.999.999.999,99, menos que la base de datos, porque por encima un número de JavaScript pierde centavos.
+
+## Precios en dólares
+
+Los precios se muestran con el formato es-EC: símbolo $, dos decimales, coma decimal y punto de miles. Es solo presentación: la Api no guarda la moneda ni convierte valores.
+
+## Accesibilidad
+
+Los errores de cada campo se anuncian con `aria-live`, los controles miden al menos 44 px y el foco siempre es visible. El listado usa tarjetas por debajo de 1024 px y tabla a partir de ahí.
 
 ## Errores en pantalla o en notificación
 

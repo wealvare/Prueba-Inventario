@@ -25,7 +25,7 @@ export type FormularioLote = FormGroup<{
   cantidad: FormControl<number | null>;
 }>;
 
-export type FormularioProducto = FormGroup<{
+type FormularioProducto = FormGroup<{
   codigo: FormControl<string>;
   nombre: FormControl<string>;
   descripcion: FormControl<string>;

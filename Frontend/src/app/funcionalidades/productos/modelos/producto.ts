@@ -48,7 +48,7 @@ export interface Producto {
   lotes: Lote[];
 }
 
-export type SolicitudLote = Omit<Lote, 'id'> & { id: number | null };
+type SolicitudLote = Omit<Lote, 'id'> & { id: number | null };
 
 export interface SolicitudCrearProducto {
   codigo: string;

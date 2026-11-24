@@ -107,6 +107,7 @@
               <th scope="col" class="celda text-right">Precio mínimo</th>
               <th scope="col" class="celda text-right">Precio máximo</th>
               <th scope="col" class="celda">Estado</th>
+              <th scope="col" class="celda"><span class="sr-only">Acciones</span></th>
             </tr>
           </thead>
           <tbody class="divide-y divide-neutral-100">
@@ -123,6 +124,12 @@
                   {{ (producto.precioMaximo | number: '1.2-2') ?? '—' }}
                 </td>
                 <td class="celda"><app-etiqueta-estado [activo]="producto.activo" /></td>
+                <td class="celda">
+                  <ng-container
+                    [ngTemplateOutlet]="acciones"
+                    [ngTemplateOutletContext]="{ $implicit: producto }"
+                  />
+                </td>
               </tr>
             }
           </tbody>
@@ -155,6 +162,12 @@
                 <dd>{{ (producto.precioMaximo | number: '1.2-2') ?? '—' }}</dd>
               </div>
             </dl>
+            <div class="mt-4">
+              <ng-container
+                [ngTemplateOutlet]="acciones"
+                [ngTemplateOutletContext]="{ $implicit: producto }"
+              />
+            </div>
           </li>
         }
       </ul>
@@ -173,3 +186,14 @@
     </p>
   }
 </section>
+
+<ng-template #acciones let-producto>
+  <div class="flex gap-4 md:justify-end">
+    <a
+      class="enlace"
+      [routerLink]="['/productos', producto.id]"
+      [attr.aria-label]="'Ver ' + producto.nombre"
+      >Ver</a
+    >
+  </div>
+</ng-template>

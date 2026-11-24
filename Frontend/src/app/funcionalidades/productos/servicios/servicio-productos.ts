@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { entorno } from '../../../../entornos/entorno';
 import { mostrarEnPantalla } from '../../../nucleo/interceptores/errores-en-pantalla';
-import { FiltroProductos, ProductoResumen, ResultadoPaginado } from '../modelos/producto';
+import { FiltroProductos, Producto, ProductoResumen, ResultadoPaginado } from '../modelos/producto';
 
 const URL = `${entorno.urlApi}/productos`;
 
@@ -19,5 +19,9 @@ export class ServicioProductos {
       params,
       context: mostrarEnPantalla(),
     });
+  }
+
+  obtener(id: number): Observable<Producto> {
+    return this.http.get<Producto>(`${URL}/${id}`, { context: mostrarEnPantalla() });
   }
 }

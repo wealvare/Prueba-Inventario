@@ -1,0 +1,66 @@
+<a routerLink="/productos" class="enlace">← Volver a productos</a>
+
+@if (producto.error(); as error) {
+  <div role="alert" class="tarjeta mt-6 flex flex-wrap items-center justify-between gap-4 p-6">
+    <p class="text-sm text-red-700">{{ error.message }}</p>
+    <button type="button" class="boton-secundario" (click)="producto.reload()">Reintentar</button>
+  </div>
+} @else if (producto.hasValue()) {
+  @let datos = producto.value();
+  <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
+    <div class="flex min-w-0 flex-wrap items-center gap-3">
+      <h1 class="titulo break-words">{{ datos.nombre }}</h1>
+      <app-etiqueta-estado [activo]="datos.activo" />
+    </div>
+  </div>
+
+  <dl class="tarjeta mt-8 grid gap-6 p-6 text-sm sm:grid-cols-2">
+    <div>
+      <dt class="text-neutral-500">Código</dt>
+      <dd class="mt-1">{{ datos.codigo }}</dd>
+    </div>
+    <div>
+      <dt class="text-neutral-500">Categoría</dt>
+      <dd class="mt-1">{{ datos.categoria }}</dd>
+    </div>
+    <div class="sm:col-span-2">
+      <dt class="text-neutral-500">Descripción</dt>
+      <dd class="mt-1 break-words">{{ datos.descripcion || 'Sin descripción' }}</dd>
+    </div>
+  </dl>
+
+  <h2 class="mt-10 text-lg font-semibold text-neutral-900">Lotes</h2>
+  @if (datos.lotes.length === 0) {
+    <p class="tarjeta mt-4 p-6 text-sm text-neutral-600">El producto no tiene lotes.</p>
+  } @else {
+    <div class="tarjeta relative mt-4 overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <caption class="sr-only">
+          Precio de cada lote por fecha de ingreso
+        </caption>
+        <thead class="border-b border-neutral-200 text-neutral-500">
+          <tr>
+            <th scope="col" class="celda">Fecha de ingreso</th>
+            <th scope="col" class="celda">Lote</th>
+            <th scope="col" class="celda text-right">Precio</th>
+            <th scope="col" class="celda text-right">Cantidad</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-100">
+          @for (lote of datos.lotes; track lote.id) {
+            <tr>
+              <td class="celda whitespace-nowrap">{{ lote.fechaIngreso | date: 'dd/MM/yyyy' }}</td>
+              <td class="celda">{{ lote.numeroLote }}</td>
+              <td class="celda text-right">{{ lote.precio | number: '1.2-2' }}</td>
+              <td class="celda text-right">{{ lote.cantidad | number }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+} @else {
+  <p role="status" class="tarjeta mt-6 p-10 text-center text-sm text-neutral-600">
+    Cargando producto…
+  </p>
+}

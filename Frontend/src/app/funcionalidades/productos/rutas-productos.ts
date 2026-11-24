@@ -7,4 +7,12 @@ export const rutasProductos: Routes = [
     loadComponent: () =>
       import('./pagina-productos/pagina-productos').then((m) => m.PaginaProductos),
   },
+  {
+    path: ':id',
+    title: 'Detalle del producto | Inventario',
+    loadComponent: () =>
+      import('./pagina-detalle-producto/pagina-detalle-producto').then(
+        (m) => m.PaginaDetalleProducto,
+      ),
+  },
 ];

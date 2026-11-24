@@ -1,4 +1,4 @@
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { rxResource, takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -14,7 +14,15 @@ import { ESTADOS, escribirFiltro, FILTRO_INICIAL, leerFiltro, TAMANOS_PAGINA } f
 const RETARDO_MS = 400;
 
 @Component({
-  imports: [Campo, DecimalPipe, EtiquetaEstado, Paginador, ReactiveFormsModule, RouterLink],
+  imports: [
+    Campo,
+    DecimalPipe,
+    EtiquetaEstado,
+    NgTemplateOutlet,
+    Paginador,
+    ReactiveFormsModule,
+    RouterLink,
+  ],
   selector: 'app-pagina-productos',
   templateUrl: './pagina-productos.html',
 })

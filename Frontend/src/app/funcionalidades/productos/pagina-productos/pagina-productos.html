@@ -203,5 +203,24 @@
     >
       Editar
     </a>
+    @if (producto.activo) {
+      <button
+        type="button"
+        class="enlace-peligro"
+        [attr.aria-label]="'Eliminar ' + producto.nombre"
+        (click)="porEliminar.set(producto)"
+      >
+        Eliminar
+      </button>
+    }
   </div>
 </ng-template>
+
+@if (porEliminar(); as producto) {
+  <app-confirmacion-eliminar
+    [id]="producto.id"
+    [nombre]="producto.nombre"
+    (eliminado)="alEliminar()"
+    (cancelado)="porEliminar.set(null)"
+  />
+}

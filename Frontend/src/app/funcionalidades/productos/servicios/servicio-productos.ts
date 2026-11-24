@@ -41,4 +41,8 @@ export class ServicioProductos {
       context: mostrarEnPantalla(400, 409),
     });
   }
+
+  eliminar(id: number): Observable<void> {
+    return this.http.delete<void>(`${URL}/${id}`);
+  }
 }

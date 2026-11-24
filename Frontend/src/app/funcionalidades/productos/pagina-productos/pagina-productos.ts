@@ -7,6 +7,7 @@ import { debounceTime } from 'rxjs';
 import { EtiquetaEstado } from '../../../compartido/etiqueta-estado/etiqueta-estado';
 import { Campo } from '../../../compartido/formularios/campo';
 import { Paginador } from '../../../compartido/paginador/paginador';
+import { ConfirmacionEliminar } from '../confirmacion-eliminar/confirmacion-eliminar';
 import { EstadoProductos, FiltroProductos, ProductoResumen } from '../modelos/producto';
 import { ServicioProductos } from '../servicios/servicio-productos';
 import { ESTADOS, escribirFiltro, FILTRO_INICIAL, leerFiltro, TAMANOS_PAGINA } from './filtro-url';
@@ -16,6 +17,7 @@ const RETARDO_MS = 400;
 @Component({
   imports: [
     Campo,
+    ConfirmacionEliminar,
     DecimalPipe,
     EtiquetaEstado,
     NgTemplateOutlet,
@@ -36,6 +38,7 @@ export class PaginaProductos {
   protected readonly estados = ESTADOS;
   protected readonly tamanos = TAMANOS_PAGINA;
   protected readonly errorPrecios = signal<string | null>(null);
+  protected readonly porEliminar = signal<ProductoResumen | null>(null);
 
   protected readonly filtro = computed(() => leerFiltro(this.parametros()), {
     equal: (anterior, actual) => JSON.stringify(anterior) === JSON.stringify(actual),
@@ -90,6 +93,11 @@ export class PaginaProductos {
 
   protected limpiar(): void {
     this.formulario.reset(FILTRO_INICIAL);
+  }
+
+  protected alEliminar(): void {
+    this.porEliminar.set(null);
+    this.productos.reload();
   }
 
   private aplicarFiltros(): void {

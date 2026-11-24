@@ -1,0 +1,16 @@
+<app-dialogo titulo="Eliminar producto" (cerrado)="cancelar()">
+  <p>
+    El producto <strong class="text-neutral-900">{{ nombre() }}</strong> se desactivará, no se
+    borrará. Sus lotes se conservan y puedes reactivarlo al editarlo.
+  </p>
+  <button acciones type="button" class="boton-secundario" (click)="cancelar()">Cancelar</button>
+  <button
+    acciones
+    type="button"
+    class="boton-peligro"
+    [disabled]="eliminando()"
+    (click)="eliminar()"
+  >
+    {{ eliminando() ? 'Eliminando…' : 'Eliminar' }}
+  </button>
+</app-dialogo>

@@ -1,0 +1,17 @@
+<dialog
+  #dialogo
+  aria-labelledby="titulo-dialogo"
+  aria-describedby="contenido-dialogo"
+  class="m-auto w-full max-w-md rounded-xl bg-white p-6 shadow-lg backdrop:bg-neutral-900/40 max-sm:max-w-[calc(100%-2rem)]"
+  (cancel)="cancelar($event)"
+  (keydown.tab)="atraparFoco($event, false)"
+  (keydown.shift.tab)="atraparFoco($event, true)"
+>
+  <h2 id="titulo-dialogo" class="text-lg font-semibold text-neutral-900">{{ titulo() }}</h2>
+  <div id="contenido-dialogo" class="mt-3 text-sm text-neutral-600">
+    <ng-content />
+  </div>
+  <div class="mt-6 flex flex-wrap justify-end gap-3">
+    <ng-content select="[acciones]" />
+  </div>
+</dialog>

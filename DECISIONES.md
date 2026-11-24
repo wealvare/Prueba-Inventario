@@ -57,3 +57,7 @@ Las contraseñas se guardan con BCrypt, factor 12 y prehash SHA-384 para no trun
 ## Datos iniciales
 
 Los usuarios se crean si no existen, con contraseñas tomadas de la configuración. Los 15 productos se cargan solo si la tabla está vacía.
+
+## Edición simultánea
+
+Si dos personas editan el mismo producto, gana la última en guardar. Se eligió así porque el inventario lo administran pocas personas, los choques son poco probables y evita exigir una versión del registro en cada petición y resolver conflictos en la interfaz. La base de datos sigue impidiendo códigos y lotes duplicados, y se rechaza actualizar un lote que otra persona eliminó. Si el uso concurrente creciera, se añadiría una columna `rowversion`.

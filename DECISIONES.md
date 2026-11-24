@@ -125,3 +125,96 @@ El registro del frontend queda solo en la consola del navegador. Como mejora, en
 - **Listado:** no permite elegir el orden.
 - **Formulario:** no avisa al salir con cambios sin guardar. El precio llega a 9.999.999.999.999,99 porque por encima JavaScript pierde centavos.
 - **Despliegue:** falta configurar el proxy de `/api` y un paso que aplique los scripts.
+
+## Dónde tocar
+
+Abreviaturas: `DOM`, `APL`, `INF` y `API` son los proyectos `Backend/src/Inventario.*`; `PRU` es `Backend/tests/Inventario.Pruebas`; `PROD` es `Frontend/src/app/funcionalidades/productos`; `NUC` es `Frontend/src/app/nucleo`.
+
+### Agregar un campo a Producto
+
+1. `INF/Persistencia/Scripts/004_nombre.sql` (nuevo): `ALTER TABLE dbo.Productos ADD ...`. Si es obligatorio, con `DEFAULT` para las filas existentes. Se incrusta solo.
+2. `DOM/Productos/Producto.cs`: constante de longitud, propiedad, constructor, `Reconstruir` y `Actualizar`.
+3. `APL/Productos/Dtos`: `ProductoDto.cs`, `SolicitudCrearProducto.cs` y `SolicitudActualizarProducto.cs`; `ProductoResumenDto.cs` si va en el listado.
+4. `APL/Productos/Mapeos/MapeoProducto.cs`.
+5. `APL/Productos/CasosUso`: `CrearProducto.cs` y `ActualizarProducto.cs`.
+6. `APL/Productos/Validadores`: regla en `ReglasProducto.cs`, usada en `ValidadorCrearProducto.cs` y `ValidadorActualizarProducto.cs`.
+7. `INF/Persistencia/Productos/SqlProductos.cs`: `ObtenerConLotes`, `Insertar` y `Actualizar`. Para el listado, `Listar` en la CTE y en el SELECT final; revisa si un índice debe incluir la columna.
+8. `INF/Persistencia/Productos/FilaProducto.cs`, en el mismo orden que el SELECT, y `Datos` en `RepositorioProductos.cs`.
+9. `INF/Persistencia/Semilla/CatalogoSemilla.cs`.
+10. `API/Documentacion/FiltroEjemplos.cs`. El controller no cambia.
+11. `PROD/modelos/producto.ts`.
+12. `PROD/pagina-formulario-producto/formulario-producto.ts` (tipo, `crearFormulario`, `cargarProducto` y `leerSolicitud`) y `pagina-formulario-producto.html`.
+13. `PROD/pagina-detalle-producto/pagina-detalle-producto.html`. Para el listado, la tabla y las tarjetas de `PROD/pagina-productos/pagina-productos.html`.
+14. Pruebas: `PRU/Dominio/ProductoPruebas.cs`, `PRU/Aplicacion/ProductosPruebas.cs`, `PRU/Infraestructura/RepositorioProductosPruebas.cs`, `PRU/Infraestructura/EsquemaPruebas.cs` (cantidad de scripts), `PRU/Api/ProductosApiPruebas.cs`, `Frontend/src/app/pruebas/productos-prueba.ts` y los `.spec.ts` de `PROD`.
+
+### Agregar un filtro al listado
+
+1. `APL/Productos/Dtos/FiltroProductos.cs`: parámetro opcional con valor por defecto.
+2. `APL/Productos/Validadores/ValidadorFiltroProductos.cs`: regla y mensaje.
+3. `INF/Persistencia/Productos/CondicionesProductos.cs`: fragmento fijo y parámetro. Si filtra por una columna nueva, un script con su índice.
+4. `API/Documentacion/FiltroParametros.cs`: descripción en Swagger.
+5. `PROD/modelos/producto.ts`: `FiltroProductos`.
+6. `PROD/pagina-productos/filtro-url.ts`: `FILTRO_INICIAL` y `leerFiltro`.
+7. `PROD/pagina-productos/pagina-productos.ts`: control en `formulario` y campo en `leerOrden`, en el mismo orden que devuelve `leerFiltro`.
+8. `PROD/pagina-productos/pagina-productos.html`: control dentro de `app-campo`.
+9. Pruebas: `PRU/Aplicacion/ProductosPruebas.cs`, `PRU/Infraestructura/RepositorioProductosPruebas.cs`, `PRU/Api/ProductosApiPruebas.cs`, `filtro-url.spec.ts` y `pagina-productos.spec.ts`.
+
+`servicio-productos.ts` no cambia: envía todos los filtros con valor.
+
+### Cambiar una regla de validación
+
+1. `DOM/Productos/Producto.cs` o `LoteProducto.cs`: la regla y su mensaje. Las longitudes son constantes que los validadores reutilizan.
+2. `APL/Productos/Validadores/ReglasProducto.cs` (producto) o `ValidadorLote.cs` (lote).
+3. Si cambia una longitud, precisión o `CHECK`, un script nuevo en `INF/Persistencia/Scripts`. Si una columna está en un índice, puede que haya que recrearlo.
+4. `PROD/pagina-formulario-producto/formulario-producto.ts`: validadores del control. Si la regla es nueva, `Frontend/src/app/compartido/formularios/validadores.ts` y su texto en `mensaje-error.ts`.
+5. Pruebas: `PRU/Dominio/ProductoPruebas.cs`, `PRU/Aplicacion/ProductosPruebas.cs` y `formulario-producto.spec.ts`.
+
+### Agregar un rol
+
+1. `DOM/Usuarios/RolUsuario.cs`.
+2. Script nuevo: reemplazar `CK_Usuarios_Rol` con el rol agregado.
+3. `INF/Configuracion/OpcionesSemilla.cs`, `.env.example`, `.env` y los valores de prueba en `PRU/Api/FabricaApi.cs` y `PRU/Infraestructura/OpcionesPruebas.cs`, si tendrá usuario inicial.
+4. `API/Productos/ProductosController.cs`: `[Authorize(Roles = ...)]` de cada acción. Un rol nuevo ya puede leer, porque el controller solo exige sesión.
+5. `NUC/modelos/sesion.ts` (`Rol`) y `NUC/servicios/lector-token.ts` (`ROLES`); si falta aquí, el frontend rechaza el token.
+6. `NUC/servicios/servicio-autenticacion.ts`: señal como `esAdministrador`. Si protege rutas, una guardia en `NUC/guardias` y su uso en `PROD/rutas-productos.ts`.
+7. Pruebas: `PRU/Dominio/UsuarioPruebas.cs`, `PRU/Infraestructura/EsquemaPruebas.cs`, `PRU/Infraestructura/SemillaPruebas.cs`, `PRU/Api/ProductosApiPruebas.cs`, `NUC/guardias/guardias.spec.ts` y `NUC/servicios/servicio-autenticacion.spec.ts`.
+
+El token ya lleva el rol, así que `ServicioToken` no cambia.
+
+### Restringir un endpoint
+
+1. `API/Productos/ProductosController.cs`: `[Authorize(Roles = SoloAdministrador)]` y `[SwaggerResponse(403, ...)]` en la acción.
+2. `PROD/rutas-productos.ts`: `canActivate: [guardiaAdministrador]` en su ruta, y `@if (esAdministrador())` en los enlaces que llevan a ella.
+3. Pruebas: `Consulta_AlEscribir_Recibe403` en `PRU/Api/ProductosApiPruebas.cs` y `PROD/rutas-productos.spec.ts`. Actualiza la tabla de endpoints de `README.md`.
+
+### Cambiar el tamaño de página
+
+1. `APL/Productos/Dtos/FiltroProductos.cs`: valor por defecto de la Api.
+2. `APL/Productos/Validadores/ValidadorFiltroProductos.cs`: `TamanoMaximo`, y el texto en `API/Documentacion/FiltroParametros.cs`.
+3. `PROD/pagina-productos/filtro-url.ts`: `FILTRO_INICIAL.tamanoPagina` y `TAMANOS_PAGINA`, que debe contener el valor inicial.
+4. Pruebas: `Listar_AplicaValoresPorDefecto` en `PRU/Api/ProductosApiPruebas.cs`, `PRU/Aplicacion/ProductosPruebas.cs`, `filtro-url.spec.ts` y `pagina-productos.spec.ts`.
+
+### Cambiar el formato de moneda
+
+1. `Frontend/src/app/app.config.ts`: datos regionales importados, `LOCALE_ID` y `DEFAULT_CURRENCY_CODE`.
+2. `PROD/pagina-formulario-producto/pagina-formulario-producto.html`: etiqueta `Precio (USD)`.
+3. Pruebas: `pagina-productos.spec.ts` y `pagina-detalle-producto.spec.ts`.
+
+### Ejecutar solo las pruebas afectadas
+
+Desde `Backend`. Las de `Infraestructura` que usan base de datos y las de `Api` requieren Docker:
+
+```bash
+dotnet test --filter "FullyQualifiedName~Dominio.ProductoPruebas"
+dotnet test --filter "FullyQualifiedName~Aplicacion.ProductosPruebas"
+dotnet test --filter "FullyQualifiedName~RepositorioProductosPruebas"
+dotnet test --filter "FullyQualifiedName~EsquemaPruebas|FullyQualifiedName~SemillaPruebas"
+dotnet test --filter "FullyQualifiedName~ProductosApiPruebas"
+```
+
+Desde `Frontend`:
+
+```bash
+npm test -- --watch=false --include="src/app/funcionalidades/productos/**/*.spec.ts"
+npm test -- --watch=false --include="src/app/nucleo/**/*.spec.ts"
+```

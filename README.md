@@ -7,7 +7,7 @@ Aplicación para administrar productos y sus lotes. Cada producto puede tener va
 - **Backend:** .NET 10, arquitectura hexagonal, Dapper, SQL Server, JWT.
 - **Frontend:** Angular 22, signals, Tailwind CSS.
 
-Las decisiones de diseño están en [DECISIONES.md](DECISIONES.md).
+Las decisiones de diseño y la guía para cambios puntuales están en [DECISIONES.md](DECISIONES.md).
 
 ## Requisitos
 

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using FluentValidation;
 using Inventario.Dominio.Excepciones;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ public sealed class MiddlewareErrores(RequestDelegate siguiente, ILogger<Middlew
 {
     private const int SolicitudCancelada = 499;
 
+    [DebuggerDisableUserUnhandledExceptions]
     public async Task InvokeAsync(HttpContext contexto)
     {
         try
@@ -25,6 +27,10 @@ public sealed class MiddlewareErrores(RequestDelegate siguiente, ILogger<Middlew
         {
             var problema = Convertir(contexto, error);
             Registrar(error, problema.Status!.Value);
+
+            if (problema.Status >= StatusCodes.Status500InternalServerError)
+                Debugger.BreakForUserUnhandledException(error);
+
             await Problemas.EscribirAsync(contexto, problema);
         }
     }

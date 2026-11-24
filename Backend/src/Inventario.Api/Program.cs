@@ -14,7 +14,7 @@ try
 {
     constructor.Services.AddSerilog((servicios, registro) => registro
         .Configurar(constructor.Configuration, constructor.Environment)
-        .ReadFrom.Services(servicios));
+        .ReadFrom.Services(servicios), preserveStaticLogger: true);
 
     constructor.Services
         .AgregarAplicacion()

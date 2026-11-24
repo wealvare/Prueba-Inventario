@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Inventario.Api.Registros;
 using Serilog.Context;
 
 namespace Inventario.Api.Correlacion;
@@ -15,7 +16,7 @@ public sealed partial class MiddlewareCorrelacion(RequestDelegate siguiente)
         contexto.TraceIdentifier = correlacion;
         contexto.Response.Headers[Encabezado] = correlacion;
 
-        using (LogContext.PushProperty("Correlacion", correlacion))
+        using (LogContext.PushProperty(ConfiguracionRegistros.Correlacion, correlacion))
             await siguiente(contexto);
     }
 

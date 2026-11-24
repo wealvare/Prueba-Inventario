@@ -64,6 +64,26 @@ public sealed class CanalizacionPruebas(FabricaApi fabrica)
             && evento.Properties.GetValueOrDefault("StatusCode")?.ToString() == ((int)estado).ToString());
     }
 
+    [Fact]
+    public async Task Registros_IncluyenEntornoYOrigen()
+    {
+        var correlacion = await ConsultarAsync("/salud");
+
+        var evento = Assert.Single(Peticiones(correlacion));
+        Assert.Equal("\"Development\"", evento.Properties["Entorno"].ToString());
+        Assert.Equal("\"backend\"", evento.Properties["Origen"].ToString());
+    }
+
+    [Fact]
+    public async Task Registros_NoPermitenInsertarLineasDesdeLaRuta()
+    {
+        var correlacion = await ConsultarAsync("/api/inexistente%0A[INF]%20linea%20falsa?token=secreto-en-consulta");
+
+        var evento = Assert.Single(Peticiones(correlacion));
+        Assert.DoesNotContain('\n', evento.RenderMessage());
+        Assert.DoesNotContain("secreto-en-consulta", evento.RenderMessage());
+    }
+
     [Theory]
     [InlineData("correlacion-1", true)]
     [InlineData("valor no válido!", false)]
@@ -98,6 +118,19 @@ public sealed class CanalizacionPruebas(FabricaApi fabrica)
         Assert.DoesNotContain(fabrica.Token(RolUsuario.Administrador), texto);
         Assert.DoesNotContain("token-no-valido", texto);
     }
+
+    private async Task<string> ConsultarAsync(string ruta)
+    {
+        var correlacion = Guid.NewGuid().ToString("N");
+        var solicitud = new HttpRequestMessage(HttpMethod.Get, ruta);
+        solicitud.Headers.Add("X-Correlacion", correlacion);
+        await fabrica.CreateClient().SendAsync(solicitud);
+        return correlacion;
+    }
+
+    private IEnumerable<LogEvent> Peticiones(string correlacion) => fabrica.Registros.Eventos.Where(evento =>
+        evento.Properties.ContainsKey("RequestPath")
+        && evento.Properties["Correlacion"].ToString() == $"\"{correlacion}\"");
 
     [Fact]
     public async Task Salud_EsPublicaYVerificaLaBaseDeDatos()

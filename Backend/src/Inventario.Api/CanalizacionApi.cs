@@ -16,7 +16,16 @@ public static class CanalizacionApi
         {
             opciones.Logger = aplicacion.Services.GetRequiredService<Serilog.ILogger>();
             opciones.MessageTemplate = "{RequestMethod} {RequestPath} respondió {StatusCode} en {Elapsed:0} ms";
-            opciones.GetLevel = (contexto, _, _) => NivelRegistro(contexto.Response.StatusCode);
+            opciones.GetLevel = (contexto, _, error) => error is null
+                ? NivelRegistro(contexto.Response.StatusCode)
+                : LogEventLevel.Error;
+            opciones.GetMessageTemplateProperties = (contexto, _, duracion, estado) =>
+            [
+                new LogEventProperty("RequestMethod", new ScalarValue(contexto.Request.Method)),
+                new LogEventProperty("RequestPath", new ScalarValue(contexto.Request.Path.ToUriComponent())),
+                new LogEventProperty("StatusCode", new ScalarValue(estado)),
+                new LogEventProperty("Elapsed", new ScalarValue(duracion))
+            ];
         });
         aplicacion.UseMiddleware<MiddlewareErrores>();
         aplicacion.UseStatusCodePages(pagina => Problemas.EscribirAsync(

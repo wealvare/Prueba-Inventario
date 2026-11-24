@@ -1,6 +1,6 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { FormControl, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { Campo } from '../../../compartido/formularios/campo';
 import { mensajeError } from '../../../compartido/formularios/mensaje-error';
@@ -10,7 +10,7 @@ import { ServicioAutenticacion } from '../../../nucleo/servicios/servicio-autent
 import { rutaSegura } from '../ruta-segura';
 
 @Component({
-  imports: [Campo, ReactiveFormsModule],
+  imports: [Campo, ReactiveFormsModule, RouterLink],
   selector: 'app-pagina-inicio-sesion',
   templateUrl: './pagina-inicio-sesion.html',
 })

@@ -5,6 +5,10 @@ const MENSAJES: Record<string, (datos: never) => string> = {
   textoRequerido: () => 'Este campo es obligatorio.',
   maxlength: ({ requiredLength }: { requiredLength: number }) =>
     `No puede superar los ${requiredLength} caracteres.`,
+  nombreUsuario: () =>
+    'Usa al menos 3 caracteres: letras sin tilde, números, punto, guion o guion bajo.',
+  correo: () => 'El correo no tiene un formato válido.',
+  contrasena: () => 'Debe tener entre 8 y 100 caracteres, con mayúscula, minúscula y número.',
   min: ({ min }: { min: number }) => `Debe ser mayor o igual a ${min}.`,
   max: ({ max }: { max: number }) => `Debe ser menor o igual a ${max}.`,
   mayorQueCero: () => 'Debe ser mayor a cero.',

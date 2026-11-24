@@ -4,7 +4,12 @@ import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { entorno } from '../../../entornos/entorno';
 import { mostrarEnPantalla } from '../interceptores/errores-en-pantalla';
-import { RespuestaInicioSesion, SolicitudInicioSesion, Usuario } from '../modelos/sesion';
+import {
+  RespuestaInicioSesion,
+  SolicitudInicioSesion,
+  SolicitudRegistro,
+  Usuario,
+} from '../modelos/sesion';
 import { ErrorApi } from '../modelos/error-api';
 import { AlmacenToken } from './almacen-token';
 import { leerToken } from './lector-token';
@@ -12,6 +17,7 @@ import { ServicioNotificaciones } from './servicio-notificaciones';
 
 export const RUTA_INICIO_SESION = '/iniciar-sesion';
 export const URL_INICIO_SESION = `${entorno.urlApi}/autenticacion/login`;
+const URL_REGISTRO = `${entorno.urlApi}/autenticacion/registro`;
 const ESPERA_MAXIMA_MS = 2_147_483_647;
 
 @Injectable({ providedIn: 'root' })
@@ -52,6 +58,12 @@ export class ServicioAutenticacion {
         this.almacen.guardar(token);
       }),
     );
+  }
+
+  registrar(solicitud: SolicitudRegistro): Observable<void> {
+    return this.http.post<void>(URL_REGISTRO, solicitud, {
+      context: mostrarEnPantalla(400, 409, 429),
+    });
   }
 
   obtenerToken(): string | null {

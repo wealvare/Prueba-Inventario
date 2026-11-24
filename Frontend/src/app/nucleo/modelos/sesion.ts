@@ -5,6 +5,12 @@ export interface SolicitudInicioSesion {
   contrasena: string;
 }
 
+export interface SolicitudRegistro {
+  nombreUsuario: string;
+  correo: string;
+  contrasena: string;
+}
+
 export interface RespuestaInicioSesion {
   token: string;
   expiracion: string;

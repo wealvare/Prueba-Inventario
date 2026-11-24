@@ -1,0 +1,76 @@
+<main class="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-4 py-12">
+  <h1 class="titulo">Crear cuenta</h1>
+  <p class="mt-2 text-sm text-neutral-600">La cuenta permite consultar el inventario.</p>
+
+  <form
+    class="mt-8 flex flex-col gap-5"
+    novalidate
+    [formGroup]="formulario"
+    (ngSubmit)="registrar()"
+  >
+    <app-campo idControl="nombreUsuario" etiqueta="Usuario" [error]="mensaje('nombreUsuario')">
+      <input
+        id="nombreUsuario"
+        type="text"
+        class="campo"
+        autocomplete="username"
+        aria-describedby="nombreUsuario-error"
+        formControlName="nombreUsuario"
+        [attr.aria-invalid]="mensaje('nombreUsuario') !== null"
+      />
+    </app-campo>
+
+    <app-campo idControl="correo" etiqueta="Correo" [error]="mensaje('correo')">
+      <input
+        id="correo"
+        type="email"
+        class="campo"
+        autocomplete="email"
+        aria-describedby="correo-error"
+        formControlName="correo"
+        [attr.aria-invalid]="mensaje('correo') !== null"
+      />
+    </app-campo>
+
+    <app-campo idControl="contrasena" etiqueta="Contraseña" [error]="mensaje('contrasena')">
+      <input
+        id="contrasena"
+        type="password"
+        class="campo"
+        autocomplete="new-password"
+        aria-describedby="contrasena-error"
+        formControlName="contrasena"
+        [attr.aria-invalid]="mensaje('contrasena') !== null"
+      />
+    </app-campo>
+
+    <app-campo
+      idControl="confirmacion"
+      etiqueta="Confirmar contraseña"
+      [error]="mensajeConfirmacion()"
+    >
+      <input
+        id="confirmacion"
+        type="password"
+        class="campo"
+        autocomplete="new-password"
+        aria-describedby="confirmacion-error"
+        formControlName="confirmacion"
+        [attr.aria-invalid]="mensajeConfirmacion() !== null"
+      />
+    </app-campo>
+
+    @if (errorServidor(); as error) {
+      <p role="alert" class="aviso-error">{{ error }}</p>
+    }
+
+    <button type="submit" class="boton-principal" [disabled]="enviando()">
+      {{ enviando() ? 'Creando…' : 'Crear cuenta' }}
+    </button>
+  </form>
+
+  <p class="mt-6 flex flex-wrap items-center gap-x-2 text-sm text-neutral-600">
+    ¿Ya tienes cuenta?
+    <a routerLink="/iniciar-sesion" class="enlace">Iniciar sesión</a>
+  </p>
+</main>

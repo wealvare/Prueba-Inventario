@@ -12,6 +12,15 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'crear-cuenta',
+    title: 'Crear cuenta | Inventario',
+    canActivate: [guardiaAnonimo],
+    loadComponent: () =>
+      import('./funcionalidades/autenticacion/pagina-registro/pagina-registro').then(
+        (m) => m.PaginaRegistro,
+      ),
+  },
+  {
     path: '',
     canActivate: [guardiaAutenticado],
     loadComponent: () => import('./nucleo/diseno/diseno-principal').then((m) => m.DisenoPrincipal),

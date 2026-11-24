@@ -1,3 +1,4 @@
+import { ApplicationRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { Observable, of, Subject, throwError } from 'rxjs';
@@ -45,6 +46,13 @@ describe('PaginaInicioSesion', () => {
 
     expect(iniciarSesion).toHaveBeenCalledWith({ nombreUsuario: 'admin', contrasena: 'clave' });
     expect(navegar).toHaveBeenCalledWith('/productos/nuevo');
+  });
+
+  it('enlaza con la creación de cuentas', async () => {
+    const { elemento } = preparar();
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    expect(elemento.querySelector('a')?.getAttribute('href')).toBe('/crear-cuenta');
   });
 
   it('avisa en el campo si falta un dato y no llama a la API', async () => {

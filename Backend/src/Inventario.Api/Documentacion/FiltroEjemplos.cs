@@ -17,7 +17,7 @@ internal sealed class FiltroEjemplos : ISchemaFilter
         [typeof(SolicitudCrearProducto)] = """
             {
               "codigo": "TEC-100", "nombre": "Teclado compacto", "descripcion": "Teclado de 60 teclas", "categoria": "Periféricos",
-              "lotes": [{ "numeroLote": "TEC-100-L1", "fechaIngreso": "2026-01-15", "precio": 159900.50, "cantidad": 20 }]
+              "lotes": [{ "numeroLote": "TEC-100-L1", "fechaIngreso": "2026-01-15", "precio": 59.90, "cantidad": 20 }]
             }
             """,
         [typeof(SolicitudActualizarProducto)] = """
@@ -25,8 +25,8 @@ internal sealed class FiltroEjemplos : ISchemaFilter
               "codigo": "TEC-100", "nombre": "Teclado compacto", "descripcion": "Teclado de 60 teclas", "categoria": "Periféricos",
               "activo": true,
               "lotes": [
-                { "id": 1, "numeroLote": "TEC-100-L1", "fechaIngreso": "2026-01-15", "precio": 162000, "cantidad": 15 },
-                { "numeroLote": "TEC-100-L2", "fechaIngreso": "2026-02-15", "precio": 165000, "cantidad": 30 }
+                { "id": 1, "numeroLote": "TEC-100-L1", "fechaIngreso": "2026-01-15", "precio": 62.00, "cantidad": 15 },
+                { "numeroLote": "TEC-100-L2", "fechaIngreso": "2026-02-15", "precio": 65.50, "cantidad": 30 }
               ]
             }
             """,
@@ -34,13 +34,13 @@ internal sealed class FiltroEjemplos : ISchemaFilter
             {
               "id": 1, "codigo": "TEC-100", "nombre": "Teclado compacto", "descripcion": "Teclado de 60 teclas",
               "categoria": "Periféricos", "activo": true,
-              "lotes": [{ "id": 1, "numeroLote": "TEC-100-L1", "fechaIngreso": "2026-01-15", "precio": 159900.50, "cantidad": 20 }]
+              "lotes": [{ "id": 1, "numeroLote": "TEC-100-L1", "fechaIngreso": "2026-01-15", "precio": 59.90, "cantidad": 20 }]
             }
             """,
         [typeof(ProductoResumenDto)] = """
             {
               "id": 1, "codigo": "TEC-100", "nombre": "Teclado compacto", "categoria": "Periféricos", "activo": true,
-              "cantidadLotes": 2, "cantidadTotal": 45, "precioMinimo": 162000, "precioMaximo": 165000
+              "cantidadLotes": 2, "cantidadTotal": 45, "precioMinimo": 62.00, "precioMaximo": 65.50
             }
             """
     };

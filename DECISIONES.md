@@ -94,6 +94,8 @@ Se publica solo en desarrollo. La estructura se documenta con atributos y los ej
 
 El listado elige primero la página y después resume los lotes solo de esos productos, así su coste no crece con el número de página. `IX_Productos_Activo_Nombre` cubre el filtro por estado, el orden y la búsqueda; `IX_Productos_Categoria_Activo_Nombre`, el filtro por categoría; `IX_Productos_Activo_Categoria`, la lista de categorías; y el índice único de lotes incluye precio y cantidad para el resumen y el rango de precios.
 
+Incluir la descripción en `IX_Productos_Activo_Nombre` evita volver a la tabla al buscar, pero la duplica: hasta 1000 bytes más por producto, más memoria de caché y una escritura adicional al cambiarla. Lo acepto porque se lee mucho más de lo que se escribe.
+
 La búsqueda por texto contenido y el listado de todos los estados recorren un índice completo. Es suficiente para este volumen; con mucho más convendría búsqueda de texto completo.
 
 ## Frontend con signals
@@ -116,7 +118,7 @@ La compilación de producción usa `/api`, relativa al sitio, para no fijar una 
 
 ## Errores en el frontend
 
-Un interceptor convierte las respuestas fallidas en `ErrorApi`, con mensaje en español, correlación y errores por campo. Usa el detalle de ProblemDetails en los errores de negocio y un texto genérico en los de servidor, donde además muestra la correlación para poder buscarla en los registros. El 401 cierra la sesión, salvo en el propio inicio de sesión. Una respuesta correcta con JSON inválido se trata como error del servidor. Los errores ajenos a la Api, como no poder descargar una pantalla, llegan a un `ErrorHandler` propio que los registra y avisa. El registro del frontend escribe en la consola método, URL, estado y correlación, sin cuerpos ni tokens.
+Un interceptor convierte las respuestas fallidas en `ErrorApi`, con mensaje en español, correlación y errores por campo. Usa el detalle de ProblemDetails en los errores de negocio y un texto genérico en los de servidor, donde además muestra la correlación para poder buscarla en los registros. El 401 cierra la sesión, salvo en el propio inicio de sesión. Una respuesta correcta con JSON inválido se trata como error del servidor. Los errores ajenos a la Api, como no poder descargar una pantalla, llegan a un `ErrorHandler` propio que los registra y avisa. El registro del frontend escribe en la consola método, URL, estado y correlación, sin cuerpos ni tokens. Queda solo en el navegador de cada persona; una mejora posible es enviar los errores a un endpoint propio o a un servicio de monitoreo, con límite de envíos y sin datos sensibles.
 
 El token solo se adjunta a peticiones dirigidas a la Api.
 

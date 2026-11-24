@@ -226,7 +226,7 @@ public sealed class RepositorioProductosPruebas(BaseDatosFixture baseDatos)
     {
         var categoria = Unico();
         await GuardarAsync(categoria, "C");
-        await GuardarAsync(categoria, "A", lotes: [Lote("L-1", 5, 3), Lote("L-2", 9.5m, 4)]);
+        await GuardarAsync(categoria, "A", lotes: [Lote("L-1", 5, int.MaxValue), Lote("L-2", 9.5m, int.MaxValue)]);
         await GuardarAsync(categoria, "B");
         var repositorio = baseDatos.CrearRepositorio();
 
@@ -237,9 +237,9 @@ public sealed class RepositorioProductosPruebas(BaseDatosFixture baseDatos)
         Assert.Equal(["A", "B"], primera.Elementos.Select(producto => producto.Nombre));
         Assert.Equal("C", Assert.Single(segunda.Elementos).Nombre);
         var resumen = primera.Elementos[0];
-        Assert.Equal((2, 7, 5m, 9.5m),
+        Assert.Equal((2, 2L * int.MaxValue, 5m, 9.5m),
             (resumen.CantidadLotes, resumen.CantidadTotal, resumen.PrecioMinimo, resumen.PrecioMaximo));
-        Assert.Equal((0, 0, null), (primera.Elementos[1].CantidadLotes, primera.Elementos[1].CantidadTotal, primera.Elementos[1].PrecioMinimo));
+        Assert.Equal((0, 0L, null), (primera.Elementos[1].CantidadLotes, primera.Elementos[1].CantidadTotal, primera.Elementos[1].PrecioMinimo));
     }
 
     [Fact]

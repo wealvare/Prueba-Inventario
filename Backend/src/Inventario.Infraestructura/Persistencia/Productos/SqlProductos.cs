@@ -69,7 +69,7 @@ internal static class SqlProductos
         FROM dbo.Productos AS producto
         OUTER APPLY (
             SELECT COUNT(*) AS CantidadLotes,
-                COALESCE(SUM(lote.Cantidad), 0) AS CantidadTotal,
+                COALESCE(SUM(CAST(lote.Cantidad AS BIGINT)), 0) AS CantidadTotal,
                 MIN(lote.Precio) AS PrecioMinimo,
                 MAX(lote.Precio) AS PrecioMaximo
             FROM dbo.LotesProducto AS lote

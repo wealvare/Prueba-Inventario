@@ -7,6 +7,6 @@ public sealed record ProductoResumenDto(
     string Categoria,
     bool Activo,
     int CantidadLotes,
-    int CantidadTotal,
+    long CantidadTotal,
     decimal? PrecioMinimo,
     decimal? PrecioMaximo);

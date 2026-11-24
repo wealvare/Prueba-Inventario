@@ -14,6 +14,7 @@ public static class CanalizacionApi
         aplicacion.UseMiddleware<MiddlewareCorrelacion>();
         aplicacion.UseSerilogRequestLogging(opciones =>
         {
+            opciones.Logger = aplicacion.Services.GetRequiredService<Serilog.ILogger>();
             opciones.MessageTemplate = "{RequestMethod} {RequestPath} respondió {StatusCode} en {Elapsed:0} ms";
             opciones.GetLevel = (contexto, _, _) => NivelRegistro(contexto.Response.StatusCode);
         });

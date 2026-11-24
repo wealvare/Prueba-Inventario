@@ -48,6 +48,18 @@ public sealed class IniciarSesionPruebas
     }
 
     [Fact]
+    public async Task ConUsuarioInactivo_FallaSinGenerarToken()
+    {
+        _usuario.Desactivar(idActor: 99);
+
+        await Assert.ThrowsAsync<ExcepcionCredencialesInvalidas>(() =>
+            _casoUso.EjecutarAsync(new("admin", "clave"), CancellationToken.None));
+
+        _hasheador.Received(1).Verificar("clave", "hash");
+        _servicioToken.DidNotReceiveWithAnyArgs().Generar(default!);
+    }
+
+    [Fact]
     public async Task ConUsuarioInexistente_VerificaElHashFicticioYFalla()
     {
         _hasheador.Verificar("clave", "ficticio").Returns(true);

@@ -61,3 +61,31 @@ Los usuarios se crean si no existen, con contraseñas tomadas de la configuraci�
 ## Edición simultánea
 
 Si dos personas editan el mismo producto, gana la última en guardar. Se eligió así porque el inventario lo administran pocas personas, los choques son poco probables y evita exigir una versión del registro en cada petición y resolver conflictos en la interfaz. La base de datos sigue impidiendo códigos y lotes duplicados, y se rechaza actualizar un lote que otra persona eliminó. Si el uso concurrente creciera, se añadiría una columna `rowversion`.
+
+## Capa Api
+
+Los controllers solo reciben la petición, llaman al puerto de entrada y eligen el código HTTP. Cada capa registra sus dependencias con un método de extensión: `AgregarAplicacion`, `AgregarInfraestructura` y `AgregarApi`.
+
+## Errores
+
+Todas las respuestas de error usan ProblemDetails en español, con el identificador de correlación. Un middleware traduce las excepciones: validación y reglas de negocio a 400, credenciales a 401, producto inexistente a 404, duplicados a 409 y el resto a 500 sin detalles internos. Los 500 se registran como error, los inicios de sesión rechazados como advertencia y los demás rechazos como información.
+
+## Autorización
+
+El rol viaja en el token. Administrador puede leer y escribir, y Consulta solo leer. El token se valida por firma, algoritmo, emisor, audiencia y expiración, con 30 segundos de tolerancia de reloj. Un cambio de rol se aplica al emitir el siguiente token.
+
+## Límite de inicio de sesión
+
+Se limita por dirección IP en ventanas de un minuto, en memoria de cada instancia. Detrás de un proxy habría que configurar los encabezados reenviados, y con varias instancias, un contador compartido.
+
+## Registros
+
+Serilog escribe en consola y en archivos diarios con retención de 14. Se registran método, ruta, estado y duración, nunca cuerpos, encabezados de autorización ni cadenas de consulta. El encabezado `X-Correlacion` se acepta solo con letras, números y guiones; en otro caso se genera uno nuevo.
+
+## Compresión
+
+Se aplica solo sobre HTTP y queda desactivada en HTTPS para no exponer las respuestas a ataques como BREACH. En producción conviene delegarla en el proxy.
+
+## Swagger
+
+Se publica solo en desarrollo. La estructura se documenta con atributos y los ejemplos con un filtro, sin comentarios XML en el código.

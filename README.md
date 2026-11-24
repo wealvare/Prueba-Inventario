@@ -204,13 +204,31 @@ npm test -- --watch=false
 | POST | `/api/usuarios` | Administrador | 201, 400, 401, 403, 409 |
 | PUT | `/api/usuarios/{id}` | Administrador | 200, 400, 401, 403, 404, 409 |
 | DELETE | `/api/usuarios/{id}` | Administrador | 204, 401, 403, 404, 409 |
+| POST | `/api/registros-cliente` | Público, con límite propio | 204, 400, 413, 415, 429 |
 | GET | `/salud` | Público | 200, 503 |
 
 El listado admite `pagina`, `tamanoPagina`, `busqueda`, `categoria`, `estado` (`Activos`, `Inactivos` o `Todos`), `precioMinimo` y `precioMaximo`.
 
 El listado de usuarios admite `pagina` y `tamanoPagina`. `DELETE /api/usuarios/{id}` desactiva la cuenta.
 
-Los errores se devuelven como `application/problem+json`. El valor `correlacion` coincide con el encabezado `X-Correlacion` y permite ubicar la petición en los registros, que se guardan en `Backend/src/Inventario.Api/logs`.
+Los errores se devuelven como `application/problem+json`. El valor `correlacion` coincide con el encabezado `X-Correlacion` y permite ubicar la petición en los registros.
+
+## Registros
+
+| Origen | Dónde | Rotación |
+|---|---|---|
+| Api y errores del frontend | Consola y `Backend/src/Inventario.Api/logs/inventario-AAAAMMDD.log` | Diaria o al llegar a 10 MB; se conservan 14 archivos |
+| Salida de los scripts de inicio | `.ejecucion` | Se reemplaza en cada inicio |
+
+Ambas carpetas están fuera de git. Cada línea lleva fecha, nivel, entorno, origen (`backend` o `frontend`) y correlación:
+
+```text
+2026-11-24 15:53:04.794 -05:00 [ERR] Development frontend 0f8fad5b GET /api/productos respondió 500 en /productos, tipo no indicado
+```
+
+El nivel mínimo es Debug en desarrollo e Information en producción, y se cambia en `appsettings.{Entorno}.json`. Los 5xx se registran como error y los 4xx como advertencia.
+
+El frontend envía a `POST /api/registros-cliente` sus errores y las advertencias importantes: cada fallo con la ruta de pantalla y la correlación de la petición que falló. `LimiteRegistrosCliente__PeticionesPorMinuto` limita los envíos por dirección IP.
 
 ## Pantallas
 

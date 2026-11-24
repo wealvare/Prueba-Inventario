@@ -27,6 +27,7 @@ public static class RegistroInfraestructura
         servicios.AddSingleton<IServicioToken, ServicioToken>();
         servicios.AddScoped<IRepositorioProductos, RepositorioProductos>();
         servicios.AddScoped<IRepositorioUsuarios, RepositorioUsuarios>();
+        servicios.AddHealthChecks().AddCheck<VerificacionBaseDatos>("base-datos");
 
         return servicios;
     }

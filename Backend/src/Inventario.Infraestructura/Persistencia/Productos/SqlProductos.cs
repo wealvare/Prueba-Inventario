@@ -19,6 +19,13 @@ internal static class SqlProductos
         ) THEN 1 ELSE 0 END AS BIT);
         """;
 
+    public const string ListarCategorias = """
+        SELECT DISTINCT Categoria
+        FROM dbo.Productos
+        WHERE Activo = 1
+        ORDER BY Categoria;
+        """;
+
     public const string Insertar = """
         INSERT INTO dbo.Productos (Codigo, Nombre, Descripcion, Categoria, Activo)
         OUTPUT INSERTED.Id

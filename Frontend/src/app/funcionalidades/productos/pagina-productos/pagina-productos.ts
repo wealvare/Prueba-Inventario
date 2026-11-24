@@ -51,6 +51,17 @@ export class PaginaProductos {
     stream: ({ params }) => this.servicio.listar(params),
   });
 
+  protected readonly categorias = rxResource({ stream: () => this.servicio.listarCategorias() });
+
+  protected readonly opcionesCategoria = computed(() => {
+    const disponibles = this.categorias.hasValue() ? this.categorias.value() : [];
+    const { categoria } = this.filtro();
+
+    return categoria === '' || disponibles.includes(categoria)
+      ? disponibles
+      : [categoria, ...disponibles];
+  });
+
   protected readonly formulario = new FormGroup({
     busqueda: new FormControl('', { nonNullable: true }),
     categoria: new FormControl('', { nonNullable: true }),
@@ -100,6 +111,7 @@ export class PaginaProductos {
   protected alEliminar(): void {
     this.porEliminar.set(null);
     this.productos.reload();
+    this.categorias.reload();
   }
 
   private aplicarFiltros(): void {
@@ -120,7 +132,6 @@ export class PaginaProductos {
     this.navegar({
       ...valores,
       busqueda: valores.busqueda.trim(),
-      categoria: valores.categoria.trim(),
       pagina: 1,
     });
   }

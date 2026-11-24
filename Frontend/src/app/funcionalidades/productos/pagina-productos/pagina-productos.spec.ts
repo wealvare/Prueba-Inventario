@@ -32,7 +32,13 @@ describe('PaginaProductos', () => {
     return TestBed.inject(HttpTestingController).expectOne((peticion) => peticion.url === URL);
   };
 
-  const preparar = async (ruta = '/productos') => {
+  const pendienteCategorias = (): TestRequest =>
+    TestBed.inject(HttpTestingController).expectOne(`${URL}/categorias`);
+
+  const preparar = async (
+    ruta = '/productos',
+    categorias: string[] | null = ['Periféricos', 'Redes'],
+  ) => {
     prepararDialogo();
     registerLocaleData(localeEsCo);
     TestBed.configureTestingModule({
@@ -47,6 +53,15 @@ describe('PaginaProductos', () => {
     });
     const arnes = await RouterTestingHarness.create();
     void arnes.navigateByUrl(ruta);
+    await esperar();
+    const peticion = pendienteCategorias();
+
+    if (categorias === null) {
+      peticion.flush(null, { status: 500, statusText: 'Error' });
+    } else {
+      peticion.flush(categorias);
+    }
+
     await esperar();
     const elemento = arnes.fixture.nativeElement as HTMLElement;
 
@@ -134,6 +149,30 @@ describe('PaginaProductos', () => {
     expect(elemento.querySelector<HTMLSelectElement>('#estado')?.value).toBe('Inactivos');
   });
 
+  it('ofrece las categorías y conserva la de la URL aunque ya no exista', async () => {
+    const { elemento } = await preparar('/productos?categoria=Antigua');
+    const categoria = elemento.querySelector<HTMLSelectElement>('#categoria')!;
+
+    expect(pendiente().request.params.get('categoria')).toBe('Antigua');
+    expect([...categoria.options].map(({ text }) => text)).toEqual([
+      'Todas',
+      'Antigua',
+      'Periféricos',
+      'Redes',
+    ]);
+    expect(categoria.value).toBe('Antigua');
+  });
+
+  it('informa si no se pueden cargar las categorías', async () => {
+    const { elemento, responder } = await preparar('/productos', null);
+    await responder(pendiente());
+
+    expect(elemento.querySelector('#categoria-error')?.textContent).toContain(
+      'No se pudieron cargar las categorías.',
+    );
+    expect(elemento.querySelector('tbody tr')).not.toBeNull();
+  });
+
   it('cambia de página conservando los filtros', async () => {
     const { responder, boton } = await preparar('/productos?estado=Todos');
     await responder(pendiente());
@@ -211,7 +250,7 @@ describe('PaginaProductos', () => {
   });
 
   it('elimina tras confirmar y recarga el listado', async () => {
-    const { elemento, responder, boton } = await preparar();
+    const { elemento, responder } = await preparar();
     await responder(pendiente());
 
     elemento.querySelector<HTMLElement>('[aria-label="Eliminar Teclado"]')!.click();
@@ -227,7 +266,9 @@ describe('PaginaProductos', () => {
     eliminacion.flush(null);
     await esperar();
 
-    await responder(pendiente());
+    const recarga = pendiente();
+    pendienteCategorias();
+    await responder(recarga);
     expect(elemento.querySelector('dialog')).toBeNull();
   });
 });

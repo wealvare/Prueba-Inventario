@@ -9,7 +9,7 @@ import {
   numberAttribute,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -45,6 +45,7 @@ export class PaginaFormularioProducto {
   });
 
   protected readonly formulario = crearFormulario();
+  protected readonly categorias = rxResource({ stream: () => this.servicio.listarCategorias() });
   protected readonly cargando = signal(false);
   protected readonly guardando = signal(false);
   protected readonly errorCarga = signal<string | null>(null);

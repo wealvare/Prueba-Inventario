@@ -56,10 +56,22 @@
           id="categoria"
           type="text"
           class="campo"
+          list="sugerencias-categoria"
           aria-describedby="categoria-error"
           [formControl]="categoria"
           [attr.aria-invalid]="mensaje(categoria, 'categoria') !== null"
         />
+        @if (categorias.hasValue()) {
+          <datalist id="sugerencias-categoria">
+            @for (sugerencia of categorias.value(); track sugerencia) {
+              <option [value]="sugerencia"></option>
+            }
+          </datalist>
+        } @else if (categorias.error()) {
+          <p role="status" class="text-sm text-neutral-600">
+            No se pudieron cargar las sugerencias.
+          </p>
+        }
       </app-campo>
 
       @if (id() !== undefined) {

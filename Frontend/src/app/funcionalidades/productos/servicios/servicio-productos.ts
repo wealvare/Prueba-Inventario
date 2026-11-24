@@ -28,6 +28,10 @@ export class ServicioProductos {
     });
   }
 
+  listarCategorias(): Observable<string[]> {
+    return this.http.get<string[]>(`${URL}/categorias`, { context: mostrarEnPantalla() });
+  }
+
   obtener(id: number): Observable<Producto> {
     return this.http.get<Producto>(`${URL}/${id}`, { context: mostrarEnPantalla() });
   }

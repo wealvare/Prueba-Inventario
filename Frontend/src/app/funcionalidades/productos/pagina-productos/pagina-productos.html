@@ -20,14 +20,22 @@
     />
   </app-campo>
 
-  <app-campo idControl="categoria" etiqueta="Categoría">
-    <input
+  <app-campo
+    idControl="categoria"
+    etiqueta="Categoría"
+    [error]="categorias.error() ? 'No se pudieron cargar las categorías.' : null"
+  >
+    <select
       id="categoria"
-      type="text"
       class="campo"
-      placeholder="Nombre exacto"
+      aria-describedby="categoria-error"
       formControlName="categoria"
-    />
+    >
+      <option value="">Todas</option>
+      @for (categoria of opcionesCategoria(); track categoria) {
+        <option [value]="categoria">{{ categoria }}</option>
+      }
+    </select>
   </app-campo>
 
   <app-campo idControl="estado" etiqueta="Estado">

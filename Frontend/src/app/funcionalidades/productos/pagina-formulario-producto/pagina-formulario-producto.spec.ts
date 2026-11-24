@@ -9,6 +9,7 @@ import { PaginaFormularioProducto } from './pagina-formulario-producto';
 describe('PaginaFormularioProducto', () => {
   const servicio = {
     obtener: vi.fn((): Observable<unknown> => of(PRODUCTO)),
+    listarCategorias: vi.fn((): Observable<unknown> => of(['Audio', 'Redes'])),
     crear: vi.fn((): Observable<unknown> => of(PRODUCTO)),
     actualizar: vi.fn((): Observable<unknown> => of(PRODUCTO)),
   };
@@ -73,6 +74,27 @@ describe('PaginaFormularioProducto', () => {
       ],
     });
     expect(pagina.navegar).toHaveBeenCalledWith(['/productos', 7]);
+  });
+
+  it('sugiere las categorías existentes', async () => {
+    const { elemento } = await preparar();
+
+    const opciones = [...elemento.querySelectorAll<HTMLOptionElement>('datalist option')];
+    expect(opciones.map(({ value }) => value)).toEqual(['Audio', 'Redes']);
+    expect(elemento.querySelector('#categoria')?.getAttribute('list')).toBe(
+      elemento.querySelector('datalist')?.id,
+    );
+  });
+
+  it('permite continuar si fallan las sugerencias', async () => {
+    servicio.listarCategorias.mockReturnValueOnce(throwError(() => new ErrorApi(0, 'Sin red.')));
+    const pagina = await preparar();
+    await completar(pagina);
+
+    await pagina.guardar();
+
+    expect(pagina.elemento.textContent).toContain('No se pudieron cargar las sugerencias.');
+    expect(servicio.crear).toHaveBeenCalledOnce();
   });
 
   it('al editar carga el producto y siempre envía activo', async () => {

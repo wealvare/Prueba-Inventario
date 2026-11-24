@@ -116,7 +116,7 @@ El token solo se adjunta a peticiones dirigidas a la Api.
 
 ## Filtros del listado en la URL
 
-La URL es la única fuente del filtro: el formulario navega tras 400 ms sin cambios y el listado se consulta al cambiar los parámetros. Así la búsqueda sobrevive a recargas y al botón atrás. `rxResource` cancela la petición anterior cuando el filtro cambia. Solo se usan los parámetros que admite la Api, por eso no hay ordenamiento y la categoría se escribe con su nombre exacto.
+La URL es la única fuente del filtro: el formulario navega tras 400 ms sin cambios y el listado se consulta al cambiar los parámetros. Así la búsqueda sobrevive a recargas y al botón atrás. `rxResource` cancela la petición anterior cuando el filtro cambia. Solo se usan los parámetros que admite la Api, por eso no hay ordenamiento. Las categorías del desplegable son las de los productos activos; si la URL trae otra, se agrega a las opciones para no perder el filtro.
 
 ## Formulario de producto
 

@@ -202,6 +202,20 @@ public sealed class RepositorioProductosPruebas(BaseDatosFixture baseDatos)
     }
 
     [Fact]
+    public async Task ListarCategorias_DevuelveLasDeProductosActivosSinRepetirYOrdenadas()
+    {
+        var prefijo = Unico();
+        await GuardarAsync($"{prefijo}-B");
+        await GuardarAsync($"{prefijo}-A");
+        await GuardarAsync($"{prefijo}-A");
+        await GuardarAsync($"{prefijo}-C", activo: false);
+
+        var categorias = await baseDatos.CrearRepositorio().ListarCategoriasAsync(default);
+
+        Assert.Equal([$"{prefijo}-A", $"{prefijo}-B"], categorias.Where(categoria => categoria.StartsWith(prefijo)));
+    }
+
+    [Fact]
     public async Task Listar_FiltraPorEstado()
     {
         var categoria = Unico();

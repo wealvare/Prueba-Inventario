@@ -53,6 +53,7 @@ dotnet test --filter "Categoria!=Integracion"
 |---|---|---|---|
 | POST | `/api/autenticacion/login` | Público, con límite de intentos | 200, 400, 401, 429 |
 | GET | `/api/productos` | Administrador y Consulta | 200, 400, 401 |
+| GET | `/api/productos/categorias` | Administrador y Consulta | 200, 401 |
 | GET | `/api/productos/{id}` | Administrador y Consulta | 200, 401, 404 |
 | POST | `/api/productos` | Administrador | 201, 400, 401, 403, 409 |
 | PUT | `/api/productos/{id}` | Administrador | 200, 400, 401, 403, 404, 409 |

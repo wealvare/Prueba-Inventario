@@ -94,6 +94,22 @@ public sealed class ProductosApiPruebas(FabricaApi fabrica)
     }
 
     [Fact]
+    public async Task Categorias_RequiereSesionYOmiteLasDeProductosInactivos()
+    {
+        var categoria = Unico();
+        var producto = await CrearAsync(Nuevo(categoria: categoria));
+        var anonima = await fabrica.CreateClient().GetAsync($"{Ruta}/categorias");
+
+        var conActivo = (await _consulta.GetFromJsonAsync<string[]>($"{Ruta}/categorias"))!;
+        await _administrador.DeleteAsync($"{Ruta}/{producto.Id}");
+        var sinActivo = (await _consulta.GetFromJsonAsync<string[]>($"{Ruta}/categorias"))!;
+
+        await anonima.ProblemaAsync(HttpStatusCode.Unauthorized);
+        Assert.Contains(categoria, conActivo);
+        Assert.DoesNotContain(categoria, sinActivo);
+    }
+
+    [Fact]
     public async Task Consulta_AlEscribir_Recibe403()
     {
         var producto = await CrearAsync();

@@ -21,6 +21,7 @@ public static class RegistroAplicacion
         servicios.AddScoped<IEliminarProducto, EliminarProducto>();
         servicios.AddScoped<IObtenerProducto, ObtenerProducto>();
         servicios.AddScoped<IListarProductos, ListarProductos>();
+        servicios.AddScoped<IListarCategorias, ListarCategorias>();
 
         servicios.AddSingleton<IValidator<SolicitudInicioSesion>, ValidadorInicioSesion>();
         servicios.AddSingleton<IValidator<SolicitudCrearProducto>, ValidadorCrearProducto>();

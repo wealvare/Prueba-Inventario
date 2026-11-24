@@ -146,5 +146,7 @@ public sealed class CanalizacionPruebas(FabricaApi fabrica)
             creacion.GetProperty("responses").EnumerateObject().Select(respuesta => respuesta.Name).Order());
         Assert.True(componentes.GetProperty("schemas").GetProperty(nameof(SolicitudCrearProducto)).TryGetProperty("examples", out _));
         Assert.Equal("Crea un producto", creacion.GetProperty("summary").GetString());
+        Assert.Equal(["200", "401"], documento.GetProperty("paths").GetProperty("/api/productos/categorias").GetProperty("get")
+            .GetProperty("responses").EnumerateObject().Select(respuesta => respuesta.Name).Order());
     }
 }

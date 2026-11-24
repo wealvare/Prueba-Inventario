@@ -54,6 +54,14 @@ public sealed class RepositorioProductos(IFabricaConexion fabrica, EjecutorTrans
         return new ResultadoPaginado<ProductoResumenDto>(elementos, filtro.Pagina, filtro.TamanoPagina, total);
     }
 
+    public async Task<IReadOnlyList<string>> ListarCategoriasAsync(CancellationToken cancelacion)
+    {
+        await using var conexion = await fabrica.AbrirAsync(cancelacion);
+
+        return (await conexion.QueryAsync<string>(
+            new CommandDefinition(SqlProductos.ListarCategorias, cancellationToken: cancelacion))).AsList();
+    }
+
     public async Task<Producto> AgregarAsync(Producto producto, CancellationToken cancelacion)
     {
         var id = 0;

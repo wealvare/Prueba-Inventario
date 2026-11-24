@@ -16,6 +16,7 @@ namespace Inventario.Api.Productos;
 [SwaggerResponse(401, "Falta el token o no es válido.", typeof(ProblemDetails), "application/problem+json")]
 public sealed class ProductosController(
     IListarProductos listarProductos,
+    IListarCategorias listarCategorias,
     IObtenerProducto obtenerProducto,
     ICrearProducto crearProducto,
     IActualizarProducto actualizarProducto,
@@ -31,6 +32,12 @@ public sealed class ProductosController(
         [FromQuery] FiltroProductos filtro,
         CancellationToken cancelacion) =>
         Ok(await listarProductos.EjecutarAsync(filtro, cancelacion));
+
+    [HttpGet("categorias")]
+    [SwaggerOperation("Lista las categorías", "Categorías distintas de los productos activos, en orden alfabético.")]
+    [SwaggerResponse(200, "Categorías disponibles.", typeof(IReadOnlyList<string>))]
+    public async Task<ActionResult<IReadOnlyList<string>>> ListarCategorias(CancellationToken cancelacion) =>
+        Ok(await listarCategorias.EjecutarAsync(cancelacion));
 
     [HttpGet("{id:int}")]
     [SwaggerOperation("Obtiene un producto", "Incluye todos sus lotes.")]

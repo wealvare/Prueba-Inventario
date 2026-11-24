@@ -120,6 +120,14 @@ public sealed class ProductosPruebas
     }
 
     [Fact]
+    public async Task Actualizar_SinIndicarActivo_FallaLaValidacion()
+    {
+        await Assert.ThrowsAsync<ValidationException>(() =>
+            Actualizar.EjecutarAsync(7, Actualizacion with { Activo = null }, CancellationToken.None));
+        await VerificarSinGuardar();
+    }
+
+    [Fact]
     public async Task Actualizar_ProductoInexistente_Falla() =>
         await Assert.ThrowsAsync<ExcepcionProductoNoEncontrado>(() =>
             Actualizar.EjecutarAsync(7, Actualizacion, CancellationToken.None));

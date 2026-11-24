@@ -5,5 +5,5 @@ public sealed record SolicitudActualizarProducto(
     string Nombre,
     string? Descripcion,
     string Categoria,
-    bool Activo,
+    bool? Activo,
     IReadOnlyList<SolicitudLote> Lotes);

@@ -10,15 +10,6 @@ internal sealed record FilaProducto(
     string Categoria,
     bool Activo)
 {
-    public Producto AProducto(IEnumerable<FilaLote> lotes)
-    {
-        var producto = new Producto(Codigo, Nombre, Descripcion, Categoria);
-        Rehidratacion.AsignarId(producto, Id);
-
-        if (!Activo)
-            producto.Desactivar();
-
-        Rehidratacion.Lotes(producto).AddRange(lotes.Select(lote => lote.ALote(Id)));
-        return producto;
-    }
+    public Producto AProducto(IEnumerable<FilaLote> lotes) => Producto.Reconstruir(
+        Id, Codigo, Nombre, Descripcion, Categoria, Activo, lotes.Select(lote => lote.ALote(Id)));
 }

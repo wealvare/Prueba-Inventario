@@ -16,8 +16,7 @@ public sealed class ServicioTokenPruebas
     [InlineData(RolUsuario.Consulta)]
     public async Task Generar_FirmaElTokenConRolYExpiracion(RolUsuario rol)
     {
-        var usuario = new Usuario("usuario", "usuario@inventario.local", "hash", rol);
-        Identidad.Asignar(usuario, 5);
+        var usuario = Usuario.Reconstruir(5, "usuario", "usuario@inventario.local", "hash", rol);
 
         var token = new ServicioToken(Opciones, TimeProvider.System).Generar(usuario);
 

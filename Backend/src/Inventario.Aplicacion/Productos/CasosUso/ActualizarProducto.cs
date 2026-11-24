@@ -19,7 +19,7 @@ public sealed class ActualizarProducto(
     {
         await validador.ValidateAndThrowAsync(solicitud, cancelacion);
 
-        var producto = await repositorio.ObtenerParaEdicionAsync(id, cancelacion)
+        var producto = await repositorio.ObtenerPorIdAsync(id, cancelacion)
             ?? throw new ExcepcionProductoNoEncontrado(id);
 
         var codigo = Producto.NormalizarCodigo(solicitud.Codigo);
@@ -35,8 +35,8 @@ public sealed class ActualizarProducto(
             solicitud.Activo);
         producto.SincronizarLotes(solicitud.Lotes.ADatos());
 
-        await repositorio.GuardarCambiosAsync(cancelacion);
+        var guardado = await repositorio.ActualizarAsync(producto, cancelacion);
 
-        return producto.ADto();
+        return guardado.ADto();
     }
 }

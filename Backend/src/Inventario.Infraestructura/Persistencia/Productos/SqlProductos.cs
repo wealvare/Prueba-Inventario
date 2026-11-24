@@ -33,7 +33,6 @@ internal static class SqlProductos
 
     public const string InsertarLote = """
         INSERT INTO dbo.LotesProducto (ProductoId, NumeroLote, FechaIngreso, Precio, Cantidad)
-        OUTPUT INSERTED.Id
         VALUES (@productoId, @NumeroLote, @fechaIngreso, @Precio, @Cantidad);
         """;
 

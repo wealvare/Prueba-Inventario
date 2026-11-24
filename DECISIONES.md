@@ -26,11 +26,11 @@ El código se normaliza a mayúsculas y el caso de uso comprueba que no exista a
 
 ## Dapper para el acceso a datos
 
-Las consultas del inventario son pocas y conocidas, y Dapper permite escribir el SQL exacto: paginación con `OFFSET/FETCH`, resumen de lotes y producto con sus lotes en un solo viaje. A cambio, el repositorio registra los productos nuevos y los leídos para edición y los persiste en `GuardarCambiosAsync` dentro de una transacción.
+Las consultas del inventario son pocas y conocidas, y Dapper permite escribir el SQL exacto: paginación con `OFFSET/FETCH`, resumen de lotes y producto con sus lotes en un solo viaje. Cada escritura de un producto y sus lotes ocurre en una transacción, y el producto informa qué lotes se quitaron.
 
 Todos los valores viajan como parámetros. Los filtros dinámicos solo combinan fragmentos de SQL fijos.
 
-Los identificadores y los lotes se reconstruyen con `UnsafeAccessor` en Infraestructura, para no abrir los constructores ni los setters del dominio.
+Los repositorios reconstruyen las entidades leídas con los métodos estáticos `Reconstruir` del dominio. Así los constructores y setters siguen protegidos, la intención queda explícita y no hace falta acceder a miembros privados desde Infraestructura. Al guardar, el repositorio devuelve el producto leído de nuevo, con los ids asignados por la base de datos.
 
 ## Esquema versionado con DbUp
 

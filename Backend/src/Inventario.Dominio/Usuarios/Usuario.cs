@@ -30,4 +30,7 @@ public sealed class Usuario
     public string Correo { get; private set; }
     public string HashContrasena { get; private set; }
     public RolUsuario Rol { get; private set; }
+
+    public static Usuario Reconstruir(int id, string nombreUsuario, string correo, string hashContrasena, RolUsuario rol) =>
+        new(nombreUsuario, correo, hashContrasena, rol) { Id = id };
 }

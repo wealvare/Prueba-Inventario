@@ -18,9 +18,6 @@ public sealed class RepositorioProductos(IFabricaConexion fabrica, EjecutorTrans
     private const int IndiceUnicoDuplicado = 2601;
     private const int RestriccionUnicaDuplicada = 2627;
 
-    private readonly List<Producto> _nuevos = [];
-    private readonly List<(Producto Producto, int[] IdsLotes)> _editados = [];
-
     public async Task<Producto?> ObtenerPorIdAsync(int id, CancellationToken cancelacion)
     {
         await using var conexion = await fabrica.AbrirAsync(cancelacion);
@@ -31,16 +28,6 @@ public sealed class RepositorioProductos(IFabricaConexion fabrica, EjecutorTrans
         var lotes = await resultados.ReadAsync<FilaLote>();
 
         return fila?.AProducto(lotes);
-    }
-
-    public async Task<Producto?> ObtenerParaEdicionAsync(int id, CancellationToken cancelacion)
-    {
-        var producto = await ObtenerPorIdAsync(id, cancelacion);
-
-        if (producto is not null)
-            _editados.Add((producto, producto.Lotes.Select(lote => lote.Id).ToArray()));
-
-        return producto;
     }
 
     public async Task<bool> ExisteCodigoAsync(string codigo, int? idExcluido, CancellationToken cancelacion)
@@ -67,66 +54,49 @@ public sealed class RepositorioProductos(IFabricaConexion fabrica, EjecutorTrans
         return new ResultadoPaginado<ProductoResumenDto>(elementos, filtro.Pagina, filtro.TamanoPagina, total);
     }
 
-    public void Agregar(Producto producto) => _nuevos.Add(producto);
-
-    public async Task GuardarCambiosAsync(CancellationToken cancelacion)
+    public async Task<Producto> AgregarAsync(Producto producto, CancellationToken cancelacion)
     {
-        var asignaciones = new List<Action>();
+        var id = 0;
 
-        try
+        await GuardarAsync(producto, async transaccion =>
         {
-            await ejecutor.EjecutarAsync(async transaccion =>
-            {
-                foreach (var producto in _nuevos)
-                    await TraducirDuplicadosAsync(producto, () => InsertarAsync(producto, transaccion, asignaciones, cancelacion));
+            id = await transaccion.Connection!.ExecuteScalarAsync<int>(new CommandDefinition(
+                SqlProductos.Insertar, Datos(producto), transaccion, cancellationToken: cancelacion));
 
-                foreach (var (producto, idsLotes) in _editados)
-                    await TraducirDuplicadosAsync(
-                        producto, () => ActualizarAsync(producto, idsLotes, transaccion, asignaciones, cancelacion));
-            }, cancelacion);
-        }
-        finally
-        {
-            _nuevos.Clear();
-            _editados.Clear();
-        }
+            await InsertarLotesAsync(id, producto.Lotes, transaccion, cancelacion);
+        }, cancelacion);
 
-        asignaciones.ForEach(asignar => asignar());
+        return (await ObtenerPorIdAsync(id, cancelacion))!;
     }
 
-    private static async Task InsertarAsync(
-        Producto producto,
-        DbTransaction transaccion,
-        List<Action> asignaciones,
-        CancellationToken cancelacion)
+    public async Task<Producto> ActualizarAsync(Producto producto, CancellationToken cancelacion)
     {
-        var id = await transaccion.Connection!.ExecuteScalarAsync<int>(
-            new CommandDefinition(SqlProductos.Insertar, Datos(producto), transaccion, cancellationToken: cancelacion));
-        asignaciones.Add(() => Rehidratacion.AsignarId(producto, id));
+        await GuardarAsync(producto, async transaccion =>
+        {
+            await transaccion.Connection!.ExecuteAsync(new CommandDefinition(
+                SqlProductos.Actualizar, Datos(producto), transaccion, cancellationToken: cancelacion));
 
-        await InsertarLotesAsync(id, producto.Lotes, transaccion, asignaciones, cancelacion);
+            await SincronizarLotesAsync(producto, transaccion, cancelacion);
+        }, cancelacion);
+
+        return (await ObtenerPorIdAsync(producto.Id, cancelacion))!;
     }
 
-    private static async Task ActualizarAsync(
+    private static async Task SincronizarLotesAsync(
         Producto producto,
-        int[] idsOriginales,
         DbTransaction transaccion,
-        List<Action> asignaciones,
         CancellationToken cancelacion)
     {
         var conexion = transaccion.Connection!;
-        await conexion.ExecuteAsync(
-            new CommandDefinition(SqlProductos.Actualizar, Datos(producto), transaccion, cancellationToken: cancelacion));
 
-        var existentes = producto.Lotes.Where(lote => lote.Id != 0).ToList();
-        var eliminados = idsOriginales.Except(existentes.Select(lote => lote.Id)).ToList();
-
-        if (eliminados.Count > 0)
+        if (producto.IdsLotesEliminados.Count > 0)
             await conexion.ExecuteAsync(new CommandDefinition(
                 SqlProductos.EliminarLotes,
-                new { productoId = producto.Id, ids = JsonSerializer.Serialize(eliminados) },
+                new { productoId = producto.Id, ids = JsonSerializer.Serialize(producto.IdsLotesEliminados) },
                 transaccion,
                 cancellationToken: cancelacion));
+
+        var existentes = producto.Lotes.Where(lote => lote.Id != 0).ToList();
 
         if (existentes.Count > 0)
         {
@@ -140,20 +110,17 @@ public sealed class RepositorioProductos(IFabricaConexion fabrica, EjecutorTrans
                 throw new ExcepcionReglaNegocio("Otro usuario modificó los lotes del producto. Vuelve a cargarlo e inténtalo de nuevo.");
         }
 
-        await InsertarLotesAsync(
-            producto.Id, producto.Lotes.Where(lote => lote.Id == 0), transaccion, asignaciones, cancelacion);
+        await InsertarLotesAsync(producto.Id, producto.Lotes.Where(lote => lote.Id == 0), transaccion, cancelacion);
     }
 
     private static async Task InsertarLotesAsync(
         int productoId,
         IEnumerable<LoteProducto> lotes,
         DbTransaction transaccion,
-        List<Action> asignaciones,
         CancellationToken cancelacion)
     {
         foreach (var lote in lotes)
-        {
-            var id = await transaccion.Connection!.ExecuteScalarAsync<int>(new CommandDefinition(
+            await transaccion.Connection!.ExecuteAsync(new CommandDefinition(
                 SqlProductos.InsertarLote,
                 new
                 {
@@ -165,12 +132,24 @@ public sealed class RepositorioProductos(IFabricaConexion fabrica, EjecutorTrans
                 },
                 transaccion,
                 cancellationToken: cancelacion));
+    }
 
-            asignaciones.Add(() =>
-            {
-                Rehidratacion.AsignarId(lote, id);
-                Rehidratacion.AsignarProductoId(lote, productoId);
-            });
+    private async Task GuardarAsync(
+        Producto producto,
+        Func<DbTransaction, Task> operacion,
+        CancellationToken cancelacion)
+    {
+        try
+        {
+            await ejecutor.EjecutarAsync(operacion, cancelacion);
+        }
+        catch (SqlException error) when (EsDuplicado(error, IndiceCodigo))
+        {
+            throw new ExcepcionCodigoDuplicado(producto.Codigo);
+        }
+        catch (SqlException error) when (EsDuplicado(error, IndiceNumeroLote))
+        {
+            throw new ExcepcionLoteDuplicado(NumeroLoteDuplicado(error, producto));
         }
     }
 
@@ -183,22 +162,6 @@ public sealed class RepositorioProductos(IFabricaConexion fabrica, EjecutorTrans
         producto.Categoria,
         producto.Activo
     };
-
-    private static async Task TraducirDuplicadosAsync(Producto producto, Func<Task> operacion)
-    {
-        try
-        {
-            await operacion();
-        }
-        catch (SqlException error) when (EsDuplicado(error, IndiceCodigo))
-        {
-            throw new ExcepcionCodigoDuplicado(producto.Codigo);
-        }
-        catch (SqlException error) when (EsDuplicado(error, IndiceNumeroLote))
-        {
-            throw new ExcepcionLoteDuplicado(NumeroLoteDuplicado(error, producto));
-        }
-    }
 
     private static string NumeroLoteDuplicado(SqlException error, Producto producto) =>
         producto.Lotes

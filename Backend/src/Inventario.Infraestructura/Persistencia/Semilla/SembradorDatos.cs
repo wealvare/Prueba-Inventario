@@ -56,8 +56,6 @@ public sealed class SembradorDatos(
             return;
 
         foreach (var producto in CatalogoSemilla.Crear())
-            productos.Agregar(producto);
-
-        await productos.GuardarCambiosAsync(cancelacion);
+            await productos.AgregarAsync(producto, cancelacion);
     }
 }

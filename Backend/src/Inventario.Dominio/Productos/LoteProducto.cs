@@ -20,6 +20,18 @@ public sealed class LoteProducto
     public decimal Precio { get; private set; }
     public int Cantidad { get; private set; }
 
+    public static LoteProducto Reconstruir(
+        int id,
+        int productoId,
+        string numeroLote,
+        DateOnly fechaIngreso,
+        decimal precio,
+        int cantidad) => new(numeroLote, fechaIngreso, precio, cantidad)
+        {
+            Id = id,
+            ProductoId = productoId
+        };
+
     internal void Actualizar(string numeroLote, DateOnly fechaIngreso, decimal precio, int cantidad)
     {
         var numero = Texto.Requerido(numeroLote, LongitudNumeroLote, "número de lote");

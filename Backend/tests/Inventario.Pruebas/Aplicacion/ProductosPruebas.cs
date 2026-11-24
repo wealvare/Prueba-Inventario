@@ -20,6 +20,14 @@ public sealed class ProductosPruebas
     private readonly IRepositorioProductos _repositorio = Substitute.For<IRepositorioProductos>();
     private readonly Producto _producto = new("P-01", "Teclado", null, "Periféricos");
 
+    public ProductosPruebas()
+    {
+        _repositorio.AgregarAsync(Arg.Any<Producto>(), Arg.Any<CancellationToken>())
+            .Returns(llamada => llamada.Arg<Producto>());
+        _repositorio.ActualizarAsync(Arg.Any<Producto>(), Arg.Any<CancellationToken>())
+            .Returns(llamada => llamada.Arg<Producto>());
+    }
+
     private CrearProducto Crear => new(_repositorio, new ValidadorCrearProducto());
     private ActualizarProducto Actualizar => new(_repositorio, new ValidadorActualizarProducto());
     private ListarProductos Listar => new(_repositorio, new ValidadorFiltroProductos());
@@ -31,8 +39,8 @@ public sealed class ProductosPruebas
 
         Assert.Equal("P-01", resultado.Codigo);
         Assert.Equal("L-1", Assert.Single(resultado.Lotes).NumeroLote);
-        _repositorio.Received(1).Agregar(Arg.Is<Producto>(producto => producto.Codigo == "P-01"));
-        await _repositorio.Received(1).GuardarCambiosAsync(Arg.Any<CancellationToken>());
+        await _repositorio.Received(1).AgregarAsync(
+            Arg.Is<Producto>(producto => producto.Codigo == "P-01"), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -87,7 +95,7 @@ public sealed class ProductosPruebas
     [Fact]
     public async Task Actualizar_ConDatosValidos_ModificaElProducto()
     {
-        _repositorio.ObtenerParaEdicionAsync(7, Arg.Any<CancellationToken>()).Returns(_producto);
+        _repositorio.ObtenerPorIdAsync(7, Arg.Any<CancellationToken>()).Returns(_producto);
 
         var resultado = await Actualizar.EjecutarAsync(7, Actualizacion, CancellationToken.None);
 
@@ -95,13 +103,13 @@ public sealed class ProductosPruebas
         Assert.Equal("Ratón", resultado.Nombre);
         Assert.False(resultado.Activo);
         Assert.Single(resultado.Lotes);
-        await _repositorio.Received(1).GuardarCambiosAsync(Arg.Any<CancellationToken>());
+        await _repositorio.Received(1).ActualizarAsync(_producto, Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task Actualizar_ConCodigoDeOtroProducto_FallaSinModificar()
     {
-        _repositorio.ObtenerParaEdicionAsync(7, Arg.Any<CancellationToken>()).Returns(_producto);
+        _repositorio.ObtenerPorIdAsync(7, Arg.Any<CancellationToken>()).Returns(_producto);
         _repositorio.ExisteCodigoAsync("P-02", 7, Arg.Any<CancellationToken>()).Returns(true);
 
         await Assert.ThrowsAsync<ExcepcionCodigoDuplicado>(() =>
@@ -119,12 +127,12 @@ public sealed class ProductosPruebas
     [Fact]
     public async Task Eliminar_DesactivaElProducto()
     {
-        _repositorio.ObtenerParaEdicionAsync(7, Arg.Any<CancellationToken>()).Returns(_producto);
+        _repositorio.ObtenerPorIdAsync(7, Arg.Any<CancellationToken>()).Returns(_producto);
 
         await new EliminarProducto(_repositorio).EjecutarAsync(7, CancellationToken.None);
 
         Assert.False(_producto.Activo);
-        await _repositorio.Received(1).GuardarCambiosAsync(Arg.Any<CancellationToken>());
+        await _repositorio.Received(1).ActualizarAsync(_producto, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -185,6 +193,9 @@ public sealed class ProductosPruebas
         await Assert.ThrowsAsync<ValidationException>(() =>
             Listar.EjecutarAsync(new FiltroProductos(Estado: (EstadoProductos)9), CancellationToken.None));
 
-    private async Task VerificarSinGuardar() =>
-        await _repositorio.DidNotReceiveWithAnyArgs().GuardarCambiosAsync(default);
+    private async Task VerificarSinGuardar()
+    {
+        await _repositorio.DidNotReceiveWithAnyArgs().AgregarAsync(default!, default);
+        await _repositorio.DidNotReceiveWithAnyArgs().ActualizarAsync(default!, default);
+    }
 }

@@ -22,9 +22,8 @@ public sealed class CrearProducto(
         if (await repositorio.ExisteCodigoAsync(producto.Codigo, null, cancelacion))
             throw new ExcepcionCodigoDuplicado(producto.Codigo);
 
-        repositorio.Agregar(producto);
-        await repositorio.GuardarCambiosAsync(cancelacion);
+        var guardado = await repositorio.AgregarAsync(producto, cancelacion);
 
-        return producto.ADto();
+        return guardado.ADto();
     }
 }

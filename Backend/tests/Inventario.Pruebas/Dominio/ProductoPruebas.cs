@@ -9,6 +9,10 @@ public sealed class ProductoPruebas
 
     private static Producto Crear() => new("P-01", "Teclado", "Mecánico", "Periféricos");
 
+    private static Producto Reconstruido(params (int Id, string Numero)[] lotes) => Producto.Reconstruir(
+        9, "P-01", "Teclado", "Mecánico", "Periféricos", true,
+        lotes.Select(lote => LoteProducto.Reconstruir(lote.Id, 9, lote.Numero, Fecha, 10, 5)));
+
     private static DatosLote Lote(string numero = "L-1", decimal precio = 10, int cantidad = 5, int? id = null) =>
         new(id, numero, Fecha, precio, cantidad);
 
@@ -84,15 +88,13 @@ public sealed class ProductoPruebas
     [Fact]
     public void Sincronizar_ActualizaAgregaYQuitaLotes()
     {
-        var producto = Crear();
-        producto.SincronizarLotes([Lote("L-1"), Lote("L-2")]);
-        Identidad.Asignar(producto.Lotes.ElementAt(0), 1);
-        Identidad.Asignar(producto.Lotes.ElementAt(1), 2);
+        var producto = Reconstruido((1, "L-1"), (2, "L-2"));
 
         producto.SincronizarLotes([Lote("L-1B", 20, 8, 1), Lote("L-3")]);
 
         Assert.Equal(["L-1B", "L-3"], producto.Lotes.Select(lote => lote.NumeroLote));
         Assert.Equal(20, producto.Lotes.First().Precio);
+        Assert.Equal([2], producto.IdsLotesEliminados);
     }
 
     [Fact]
@@ -108,9 +110,7 @@ public sealed class ProductoPruebas
     [Fact]
     public void Sincronizar_ConIdRepetido_Falla()
     {
-        var producto = Crear();
-        producto.SincronizarLotes([Lote()]);
-        Identidad.Asignar(producto.Lotes.First(), 1);
+        var producto = Reconstruido((1, "L-1"));
 
         Assert.Throws<ExcepcionReglaNegocio>(() =>
             producto.SincronizarLotes([Lote("L-1", id: 1), Lote("L-2", id: 1)]));
@@ -124,5 +124,18 @@ public sealed class ProductoPruebas
         producto.Desactivar();
 
         Assert.False(producto.Activo);
+    }
+
+    [Fact]
+    public void Reconstruir_ConservaIdentidadEstadoYLotes()
+    {
+        var lote = LoteProducto.Reconstruir(3, 9, "L-1", Fecha, 10, 5);
+
+        var producto = Producto.Reconstruir(9, "P-01", "Teclado", "", "Periféricos", false, [lote]);
+
+        Assert.Equal((9, false), (producto.Id, producto.Activo));
+        Assert.Equal((3, 9), (lote.Id, lote.ProductoId));
+        Assert.Same(lote, Assert.Single(producto.Lotes));
+        Assert.Empty(producto.IdsLotesEliminados);
     }
 }

@@ -21,16 +21,13 @@ public sealed class RepositorioProductosPruebas(BaseDatosFixture baseDatos)
         bool activo = true,
         params DatosLote[] lotes)
     {
-        var repositorio = baseDatos.CrearRepositorio();
         var producto = new Producto(Unico(), nombre, "Descripción", categoria);
         producto.SincronizarLotes(lotes);
 
         if (!activo)
             producto.Desactivar();
 
-        repositorio.Agregar(producto);
-        await repositorio.GuardarCambiosAsync(default);
-        return producto;
+        return await baseDatos.CrearRepositorio().AgregarAsync(producto, default);
     }
 
     private async Task<Producto> LeerAsync(int id) =>
@@ -39,10 +36,9 @@ public sealed class RepositorioProductosPruebas(BaseDatosFixture baseDatos)
     private async Task<Producto> EditarAsync(int id, Action<Producto> cambio)
     {
         var repositorio = baseDatos.CrearRepositorio();
-        var producto = (await repositorio.ObtenerParaEdicionAsync(id, default))!;
+        var producto = (await repositorio.ObtenerPorIdAsync(id, default))!;
         cambio(producto);
-        await repositorio.GuardarCambiosAsync(default);
-        return producto;
+        return await repositorio.ActualizarAsync(producto, default);
     }
 
     private async Task<int[]> IdsAsync(FiltroProductos filtro) =>
@@ -71,27 +67,23 @@ public sealed class RepositorioProductosPruebas(BaseDatosFixture baseDatos)
     {
         var existente = await GuardarAsync(Unico());
         var repositorio = baseDatos.CrearRepositorio();
-        repositorio.Agregar(new Producto(existente.Codigo, "Otro", null, "Otra"));
+        var repetido = new Producto(existente.Codigo, "Otro", null, "Otra");
 
-        var error = await Assert.ThrowsAsync<ExcepcionCodigoDuplicado>(() => repositorio.GuardarCambiosAsync(default));
+        var error = await Assert.ThrowsAsync<ExcepcionCodigoDuplicado>(() => repositorio.AgregarAsync(repetido, default));
 
         Assert.Equal($"Ya existe un producto con el código '{existente.Codigo}'.", error.Message);
     }
 
     [Fact]
-    public async Task Guardar_SiFallaUnProducto_RevierteTodos()
+    public async Task Guardar_SiFallaUnLote_RevierteElProducto()
     {
-        var existente = await GuardarAsync(Unico());
+        var lote = LoteProducto.Reconstruir(0, 0, "L-1", Fecha, 10, 5);
+        var producto = Producto.Reconstruir(0, Unico(), "Teclado", "", "Otra", true, [lote, lote]);
         var repositorio = baseDatos.CrearRepositorio();
-        var valido = new Producto(Unico(), "Válido", null, "Otra");
-        valido.SincronizarLotes([Lote("L-1")]);
-        repositorio.Agregar(valido);
-        repositorio.Agregar(new Producto(existente.Codigo, "Otro", null, "Otra"));
 
-        await Assert.ThrowsAsync<ExcepcionCodigoDuplicado>(() => repositorio.GuardarCambiosAsync(default));
+        await Assert.ThrowsAsync<ExcepcionLoteDuplicado>(() => repositorio.AgregarAsync(producto, default));
 
-        Assert.False(await repositorio.ExisteCodigoAsync(valido.Codigo, null, default));
-        Assert.Equal(0, valido.Id);
+        Assert.False(await repositorio.ExisteCodigoAsync(producto.Codigo, null, default));
     }
 
     [Fact]
@@ -164,12 +156,12 @@ public sealed class RepositorioProductosPruebas(BaseDatosFixture baseDatos)
     {
         var producto = await GuardarAsync(Unico());
         var repositorio = baseDatos.CrearRepositorio();
-        var desactualizado = (await repositorio.ObtenerParaEdicionAsync(producto.Id, default))!;
+        var desactualizado = (await repositorio.ObtenerPorIdAsync(producto.Id, default))!;
         await EditarAsync(producto.Id, p => p.SincronizarLotes([Lote("L-1", 10)]));
         desactualizado.Actualizar(producto.Codigo, "No debe guardarse", null, "Otra", true);
         desactualizado.SincronizarLotes([Lote("L-1", 20)]);
 
-        var error = await Assert.ThrowsAsync<ExcepcionLoteDuplicado>(() => repositorio.GuardarCambiosAsync(default));
+        var error = await Assert.ThrowsAsync<ExcepcionLoteDuplicado>(() => repositorio.ActualizarAsync(desactualizado, default));
 
         var leido = await LeerAsync(producto.Id);
         Assert.Equal("Ya existe un lote con el número 'L-1' en el producto.", error.Message);
@@ -183,11 +175,11 @@ public sealed class RepositorioProductosPruebas(BaseDatosFixture baseDatos)
         var producto = await GuardarAsync(Unico(), lotes: [Lote("L-1")]);
         var idLote = producto.Lotes.First().Id;
         var repositorio = baseDatos.CrearRepositorio();
-        var desactualizado = (await repositorio.ObtenerParaEdicionAsync(producto.Id, default))!;
+        var desactualizado = (await repositorio.ObtenerPorIdAsync(producto.Id, default))!;
         await EditarAsync(producto.Id, p => p.SincronizarLotes([]));
         desactualizado.SincronizarLotes([Lote("L-1", 20, id: idLote)]);
 
-        await Assert.ThrowsAsync<ExcepcionReglaNegocio>(() => repositorio.GuardarCambiosAsync(default));
+        await Assert.ThrowsAsync<ExcepcionReglaNegocio>(() => repositorio.ActualizarAsync(desactualizado, default));
     }
 
     [Fact]

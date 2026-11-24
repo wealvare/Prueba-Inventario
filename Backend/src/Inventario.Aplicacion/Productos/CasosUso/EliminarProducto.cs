@@ -8,10 +8,10 @@ public sealed class EliminarProducto(IRepositorioProductos repositorio) : IElimi
 {
     public async Task EjecutarAsync(int id, CancellationToken cancelacion)
     {
-        var producto = await repositorio.ObtenerParaEdicionAsync(id, cancelacion)
+        var producto = await repositorio.ObtenerPorIdAsync(id, cancelacion)
             ?? throw new ExcepcionProductoNoEncontrado(id);
 
         producto.Desactivar();
-        await repositorio.GuardarCambiosAsync(cancelacion);
+        await repositorio.ActualizarAsync(producto, cancelacion);
     }
 }

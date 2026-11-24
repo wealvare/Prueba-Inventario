@@ -11,6 +11,7 @@ public sealed class Producto
     public const int LongitudCategoria = 80;
 
     private readonly List<LoteProducto> _lotes = [];
+    private readonly List<int> _idsLotesEliminados = [];
 
     public Producto(string codigo, string nombre, string? descripcion, string categoria)
     {
@@ -28,6 +29,21 @@ public sealed class Producto
     public string Categoria { get; private set; }
     public bool Activo { get; private set; }
     public IReadOnlyCollection<LoteProducto> Lotes => _lotes;
+    public IReadOnlyCollection<int> IdsLotesEliminados => _idsLotesEliminados;
+
+    public static Producto Reconstruir(
+        int id,
+        string codigo,
+        string nombre,
+        string descripcion,
+        string categoria,
+        bool activo,
+        IEnumerable<LoteProducto> lotes)
+    {
+        var producto = new Producto(codigo, nombre, descripcion, categoria) { Id = id, Activo = activo };
+        producto._lotes.AddRange(lotes);
+        return producto;
+    }
 
     public static string NormalizarCodigo(string codigo) =>
         Texto.Requerido(codigo, LongitudCodigo, "código").ToUpperInvariant();
@@ -57,6 +73,7 @@ public sealed class Producto
         if (idsAjenos.Count > 0)
             throw new ExcepcionReglaNegocio($"El lote con id {idsAjenos[0]} no pertenece al producto.");
 
+        _idsLotesEliminados.AddRange(_lotes.Where(lote => lote.Id != 0 && !ids.Contains(lote.Id)).Select(lote => lote.Id));
         _lotes.RemoveAll(lote => !ids.Contains(lote.Id));
 
         foreach (var datos in lotes)

@@ -196,9 +196,15 @@ public sealed class RepositorioProductos(IFabricaConexion fabrica, EjecutorTrans
         }
         catch (SqlException error) when (EsDuplicado(error, IndiceNumeroLote))
         {
-            throw new ExcepcionReglaNegocio("Ya existe un lote con el mismo número en el producto.");
+            throw new ExcepcionLoteDuplicado(NumeroLoteDuplicado(error, producto));
         }
     }
+
+    private static string NumeroLoteDuplicado(SqlException error, Producto producto) =>
+        producto.Lotes
+            .Select(lote => lote.NumeroLote)
+            .FirstOrDefault(numero => error.Message.Contains($", {numero})", StringComparison.OrdinalIgnoreCase))
+        ?? string.Empty;
 
     private static bool EsDuplicado(SqlException error, string indice) =>
         error.Number is IndiceUnicoDuplicado or RestriccionUnicaDuplicada

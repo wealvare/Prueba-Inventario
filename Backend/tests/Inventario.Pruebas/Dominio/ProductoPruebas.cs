@@ -79,7 +79,7 @@ public sealed class ProductoPruebas
 
     [Fact]
     public void Lotes_ConNumeroRepetido_Fallan() =>
-        Assert.Throws<ExcepcionReglaNegocio>(() => Crear().SincronizarLotes([Lote("L-1"), Lote(" l-1 ")]));
+        Assert.Throws<ExcepcionLoteDuplicado>(() => Crear().SincronizarLotes([Lote("L-1"), Lote(" l-1 ")]));
 
     [Fact]
     public void Sincronizar_ActualizaAgregaYQuitaLotes()

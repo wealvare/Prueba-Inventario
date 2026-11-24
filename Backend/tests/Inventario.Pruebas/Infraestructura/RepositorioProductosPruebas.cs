@@ -169,10 +169,10 @@ public sealed class RepositorioProductosPruebas(BaseDatosFixture baseDatos)
         desactualizado.Actualizar(producto.Codigo, "No debe guardarse", null, "Otra", true);
         desactualizado.SincronizarLotes([Lote("L-1", 20)]);
 
-        var error = await Assert.ThrowsAsync<ExcepcionReglaNegocio>(() => repositorio.GuardarCambiosAsync(default));
+        var error = await Assert.ThrowsAsync<ExcepcionLoteDuplicado>(() => repositorio.GuardarCambiosAsync(default));
 
         var leido = await LeerAsync(producto.Id);
-        Assert.Equal("Ya existe un lote con el mismo número en el producto.", error.Message);
+        Assert.Equal("Ya existe un lote con el número 'L-1' en el producto.", error.Message);
         Assert.Equal("Teclado", leido.Nombre);
         Assert.Equal(10, Assert.Single(leido.Lotes).Precio);
     }

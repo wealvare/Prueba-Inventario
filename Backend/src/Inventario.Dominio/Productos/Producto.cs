@@ -77,6 +77,6 @@ public sealed class Producto
             .FirstOrDefault(grupo => grupo.Count() > 1);
 
         if (repetido is not null)
-            throw new ExcepcionReglaNegocio($"El número de lote '{repetido.Key}' está repetido en el producto.");
+            throw new ExcepcionLoteDuplicado(repetido.Key);
     }
 }

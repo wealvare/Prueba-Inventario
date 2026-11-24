@@ -1,0 +1,13 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SQLSERVER_CONTRASENA:?Define SQLSERVER_CONTRASENA en el archivo .env}
+    ports:
+      - "${SQLSERVER_PUERTO:-1433}:1433"
+    volumes:
+      - datos_sqlserver:/var/opt/mssql
+
+volumes:
+  datos_sqlserver:

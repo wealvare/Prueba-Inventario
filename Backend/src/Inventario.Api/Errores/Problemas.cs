@@ -14,7 +14,7 @@ internal static class Problemas
         [403] = ("Acceso denegado", "No tienes permiso para realizar esta acción."),
         [404] = ("No encontrado", "El recurso solicitado no existe."),
         [405] = ("Método no permitido", "El recurso no admite este método."),
-        [409] = ("Conflicto", "El recurso ya existe."),
+        [409] = ("Conflicto", "El recurso entra en conflicto con su estado actual."),
         [413] = ("Solicitud demasiado grande", "El contenido supera el tamaño permitido."),
         [415] = ("Formato no admitido", "El contenido debe enviarse en formato JSON."),
         [429] = ("Demasiadas peticiones", "Espera un momento antes de volver a intentarlo."),

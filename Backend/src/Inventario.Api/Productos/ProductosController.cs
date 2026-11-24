@@ -61,7 +61,7 @@ public sealed class ProductosController(
     [SwaggerResponse(400, "Los datos no son válidos.", typeof(ValidationProblemDetails), "application/problem+json")]
     [SwaggerResponse(403, "El rol no permite escribir.", typeof(ProblemDetails), "application/problem+json")]
     [SwaggerResponse(404, "El producto no existe.", typeof(ProblemDetails), "application/problem+json")]
-    [SwaggerResponse(409, "El código o el número de lote ya existe.", typeof(ProblemDetails), "application/problem+json")]
+    [SwaggerResponse(409, "El código o el número de lote ya existe, o un lote ya no existe.", typeof(ProblemDetails), "application/problem+json")]
     public async Task<ActionResult<ProductoDto>> Actualizar(
         int id,
         SolicitudActualizarProducto solicitud,

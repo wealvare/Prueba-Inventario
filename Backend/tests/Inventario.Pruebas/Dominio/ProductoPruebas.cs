@@ -103,7 +103,7 @@ public sealed class ProductoPruebas
         var producto = Crear();
         producto.SincronizarLotes([Lote()]);
 
-        Assert.Throws<ExcepcionReglaNegocio>(() => producto.SincronizarLotes([Lote("L-9", id: 99)]));
+        Assert.Throws<ExcepcionLoteInexistente>(() => producto.SincronizarLotes([Lote("L-9", id: 99)]));
         Assert.Single(producto.Lotes);
     }
 

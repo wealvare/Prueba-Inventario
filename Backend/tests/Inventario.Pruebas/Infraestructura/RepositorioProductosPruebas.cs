@@ -179,7 +179,7 @@ public sealed class RepositorioProductosPruebas(BaseDatosFixture baseDatos)
         await EditarAsync(producto.Id, p => p.SincronizarLotes([]));
         desactualizado.SincronizarLotes([Lote("L-1", 20, id: idLote)]);
 
-        await Assert.ThrowsAsync<ExcepcionReglaNegocio>(() => repositorio.ActualizarAsync(desactualizado, default));
+        await Assert.ThrowsAsync<ExcepcionLoteInexistente>(() => repositorio.ActualizarAsync(desactualizado, default));
     }
 
     [Fact]

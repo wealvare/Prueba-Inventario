@@ -107,7 +107,7 @@ public sealed class RepositorioProductos(IFabricaConexion fabrica, EjecutorTrans
                 cancellationToken: cancelacion));
 
             if (actualizados != existentes.Count)
-                throw new ExcepcionReglaNegocio("Otro usuario modificó los lotes del producto. Vuelve a cargarlo e inténtalo de nuevo.");
+                throw new ExcepcionLoteInexistente();
         }
 
         await InsertarLotesAsync(producto.Id, producto.Lotes.Where(lote => lote.Id == 0), transaccion, cancelacion);

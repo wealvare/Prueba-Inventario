@@ -32,7 +32,7 @@ public sealed class MiddlewareErrores(RequestDelegate siguiente, ILogger<Middlew
     private static ProblemDetails Convertir(HttpContext contexto, Exception error) => error switch
     {
         ValidationException validacion => Problemas.CrearValidacion(contexto, Agrupar(validacion)),
-        ExcepcionCodigoDuplicado or ExcepcionLoteDuplicado =>
+        ExcepcionCodigoDuplicado or ExcepcionLoteDuplicado or ExcepcionLoteInexistente =>
             Problemas.Crear(contexto, StatusCodes.Status409Conflict, error.Message),
         ExcepcionProductoNoEncontrado => Problemas.Crear(contexto, StatusCodes.Status404NotFound, error.Message),
         ExcepcionCredencialesInvalidas => Problemas.Crear(contexto, StatusCodes.Status401Unauthorized, error.Message),

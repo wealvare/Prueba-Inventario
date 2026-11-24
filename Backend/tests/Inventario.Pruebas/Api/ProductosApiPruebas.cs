@@ -148,15 +148,16 @@ public sealed class ProductosApiPruebas(FabricaApi fabrica)
     }
 
     [Fact]
-    public async Task LoteAjeno_Devuelve400()
+    public async Task LoteInexistente_Devuelve409()
     {
         var producto = await CrearAsync();
 
         var respuesta = await _administrador.PutAsJsonAsync(
             $"{Ruta}/{producto.Id}", Cambio(producto.Codigo, Lote("L-9", id: int.MaxValue)));
 
-        var problema = await respuesta.ProblemaAsync(HttpStatusCode.BadRequest);
-        Assert.Equal($"El lote con id {int.MaxValue} no pertenece al producto.", problema.Detalle());
+        var problema = await respuesta.ProblemaAsync(HttpStatusCode.Conflict);
+        Assert.Equal(
+            "Uno de los lotes ya no existe en el producto. Vuelve a cargarlo e inténtalo de nuevo.", problema.Detalle());
     }
 
     [Fact]

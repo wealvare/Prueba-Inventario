@@ -40,7 +40,7 @@ En desarrollo, la Api aplica los scripts y carga los datos iniciales al arrancar
 
 ## Sincronización de lotes
 
-Dentro de la transacción se eliminan los lotes ausentes, se actualizan los existentes por id y se insertan los nuevos. La actualización es una sola sentencia, por lo que se pueden intercambiar números entre lotes. Si otro usuario eliminó un lote que se intenta actualizar, se revierte todo y se informa.
+Dentro de la transacción se eliminan los lotes ausentes, se actualizan los existentes por id y se insertan los nuevos. La actualización es una sola sentencia, por lo que se pueden intercambiar números entre lotes. Si se envía un lote que no pertenece al producto o que otro usuario eliminó, se revierte todo y se responde 409 para que el cliente recargue el producto.
 
 ## Violaciones de unicidad
 
@@ -68,7 +68,7 @@ Los controllers solo reciben la petición, llaman al puerto de entrada y eligen 
 
 ## Errores
 
-Todas las respuestas de error usan ProblemDetails en español, con el identificador de correlación. Un middleware traduce las excepciones: validación y reglas de negocio a 400, credenciales a 401, producto inexistente a 404, duplicados a 409 y el resto a 500 sin detalles internos. Los 500 se registran como error, los inicios de sesión rechazados como advertencia y los demás rechazos como información.
+Todas las respuestas de error usan ProblemDetails en español, con el identificador de correlación. Un middleware traduce las excepciones: validación y reglas de negocio a 400, credenciales a 401, producto inexistente a 404, duplicados y lotes que ya no existen a 409 y el resto a 500 sin detalles internos. Los 500 se registran como error, los inicios de sesión rechazados como advertencia y los demás rechazos como información.
 
 ## Autorización
 

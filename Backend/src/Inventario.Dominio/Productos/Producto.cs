@@ -68,10 +68,8 @@ public sealed class Producto
         if (ids.Distinct().Count() != ids.Count)
             throw new ExcepcionReglaNegocio("No se puede enviar el mismo lote más de una vez.");
 
-        var idsAjenos = ids.Where(id => _lotes.All(lote => lote.Id != id)).ToList();
-
-        if (idsAjenos.Count > 0)
-            throw new ExcepcionReglaNegocio($"El lote con id {idsAjenos[0]} no pertenece al producto.");
+        if (ids.Any(id => _lotes.All(lote => lote.Id != id)))
+            throw new ExcepcionLoteInexistente();
 
         _idsLotesEliminados.AddRange(_lotes.Where(lote => lote.Id != 0 && !ids.Contains(lote.Id)).Select(lote => lote.Id));
         _lotes.RemoveAll(lote => !ids.Contains(lote.Id));

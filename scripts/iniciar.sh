@@ -158,8 +158,10 @@ preparar_entorno() {
   fi
 
   for variable in BaseDatos__Contrasena Jwt__Clave \
-    UsuariosIniciales__Administrador__NombreUsuario UsuariosIniciales__Administrador__Correo \n    UsuariosIniciales__Administrador__Contrasena \
-    UsuariosIniciales__Consulta__NombreUsuario UsuariosIniciales__Consulta__Correo \n    UsuariosIniciales__Consulta__Contrasena; do
+    UsuariosIniciales__Administrador__NombreUsuario UsuariosIniciales__Administrador__Correo \
+    UsuariosIniciales__Administrador__Contrasena \
+    UsuariosIniciales__Consulta__NombreUsuario UsuariosIniciales__Consulta__Correo \
+    UsuariosIniciales__Consulta__Contrasena; do
     if [ -z "$(obtener_variable "$variable")" ]; then
       vacias+=" $variable"
     fi

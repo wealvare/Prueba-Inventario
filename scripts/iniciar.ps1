@@ -245,7 +245,7 @@ function Esperar-Servicio([string]$Url, $Servicio) {
             Get-Content -LiteralPath $archivo -Tail 20 -Encoding UTF8 | Out-Host
         }
     }
-    throw "$($Servicio.Nombre) no respondió en $Url. Revisa el registro anterior en la carpeta .ejecucion."
+    throw "No hubo respuesta de $($Servicio.Nombre) en $Url. Revisa el registro anterior en la carpeta .ejecucion."
 }
 
 function Iniciar-Api {

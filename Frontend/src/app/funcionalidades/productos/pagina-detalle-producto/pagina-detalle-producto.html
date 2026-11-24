@@ -40,7 +40,12 @@
   @if (datos.lotes.length === 0) {
     <p class="tarjeta mt-4 p-6 text-sm text-neutral-600">El producto no tiene lotes.</p>
   } @else {
-    <div class="tarjeta relative mt-4 overflow-x-auto">
+    <div
+      class="tarjeta relative mt-4 overflow-x-auto"
+      role="region"
+      aria-label="Tabla de lotes"
+      tabindex="0"
+    >
       <table class="w-full text-left text-sm">
         <caption class="sr-only">
           Precio de cada lote por fecha de ingreso

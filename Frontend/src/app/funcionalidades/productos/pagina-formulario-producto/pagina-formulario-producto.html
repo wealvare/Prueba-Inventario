@@ -21,7 +21,7 @@
     @let categoria = formulario.controls.categoria;
     @let descripcion = formulario.controls.descripcion;
 
-    <div class="tarjeta grid gap-5 p-6 sm:grid-cols-2">
+    <div class="tarjeta grid gap-5 p-4 sm:grid-cols-2 sm:p-6">
       <app-campo idControl="codigo" etiqueta="Código" [error]="mensaje(codigo, 'codigo')">
         <input
           id="codigo"
@@ -65,16 +65,16 @@
             }
           </datalist>
         } @else if (categorias.error()) {
-          <p role="status" class="text-sm text-neutral-600">
+          <p role="status" class="mt-2 text-sm text-neutral-600">
             No se pudieron cargar las sugerencias.
           </p>
         }
       </app-campo>
 
       @if (id() !== undefined) {
-        <div class="flex items-end pb-2.5">
-          <label class="flex items-center gap-3 text-sm font-medium">
-            <input type="checkbox" class="size-4 accent-acento" formControlName="activo" />
+        <div class="flex items-end">
+          <label class="flex min-h-11 items-center gap-3 text-sm font-medium">
+            <input type="checkbox" class="size-5 accent-acento" formControlName="activo" />
             Producto activo
           </label>
         </div>
@@ -112,7 +112,10 @@
           @let precio = mensaje(lote.controls.precio, 'lotes[' + i + '].precio');
           @let cantidad = mensaje(lote.controls.cantidad, 'lotes[' + i + '].cantidad');
 
-          <fieldset class="tarjeta grid gap-5 p-6 sm:grid-cols-2 lg:grid-cols-4" [formGroup]="lote">
+          <fieldset
+            class="tarjeta grid gap-5 p-4 sm:grid-cols-2 sm:p-6 lg:grid-cols-4"
+            [formGroup]="lote"
+          >
             <legend class="sr-only">Lote {{ i + 1 }}</legend>
 
             <app-campo [idControl]="'numeroLote-' + i" etiqueta="Número de lote" [error]="numero">
@@ -145,6 +148,7 @@
               <input
                 type="number"
                 step="0.01"
+                inputmode="decimal"
                 class="campo"
                 formControlName="precio"
                 [id]="'precio-' + i"
@@ -157,6 +161,7 @@
               <input
                 type="number"
                 step="1"
+                inputmode="numeric"
                 class="campo"
                 formControlName="cantidad"
                 [id]="'cantidad-' + i"

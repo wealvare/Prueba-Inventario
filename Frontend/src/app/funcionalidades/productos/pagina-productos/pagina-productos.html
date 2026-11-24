@@ -53,7 +53,9 @@
       min="0"
       step="0.01"
       class="campo"
+      inputmode="decimal"
       aria-describedby="error-precios"
+      [attr.aria-invalid]="errorPrecios() !== null"
       formControlName="precioMinimo"
     />
   </app-campo>
@@ -65,7 +67,9 @@
       min="0"
       step="0.01"
       class="campo"
+      inputmode="decimal"
       aria-describedby="error-precios"
+      [attr.aria-invalid]="errorPrecios() !== null"
       formControlName="precioMaximo"
     />
   </app-campo>
@@ -85,9 +89,11 @@
   </div>
 </form>
 
-@if (errorPrecios(); as error) {
-  <p id="error-precios" role="alert" class="mt-4 text-sm text-red-700">{{ error }}</p>
-}
+<div aria-live="polite">
+  @if (errorPrecios(); as error) {
+    <p id="error-precios" class="mt-4 text-sm text-red-700">{{ error }}</p>
+  }
+</div>
 
 <section class="mt-10" aria-label="Resultados" [attr.aria-busy]="productos.isLoading()">
   @if (productos.error(); as error) {
@@ -99,7 +105,12 @@
         No hay productos que coincidan con los filtros.
       </p>
     } @else {
-      <div class="tarjeta relative hidden overflow-x-auto md:block">
+      <div
+        class="tarjeta relative hidden overflow-x-auto lg:block"
+        role="region"
+        aria-label="Tabla de productos"
+        tabindex="0"
+      >
         <table class="w-full text-left text-sm">
           <caption class="sr-only">
             Listado de productos
@@ -130,7 +141,7 @@
                   {{ (producto.precioMaximo | currency) ?? '—' }}
                 </td>
                 <td class="celda"><app-etiqueta-estado [activo]="producto.activo" /></td>
-                <td class="celda">
+                <td class="celda py-1">
                   <ng-container
                     [ngTemplateOutlet]="acciones"
                     [ngTemplateOutletContext]="{ $implicit: producto }"
@@ -142,7 +153,7 @@
         </table>
       </div>
 
-      <ul class="flex flex-col gap-4 md:hidden">
+      <ul class="grid gap-4 sm:grid-cols-2 lg:hidden">
         @for (producto of resultado.elementos; track producto.id) {
           <li class="tarjeta p-5 text-sm">
             <div class="flex items-start justify-between gap-4">
@@ -194,7 +205,7 @@
 </section>
 
 <ng-template #acciones let-producto>
-  <div class="flex gap-4 md:justify-end">
+  <div class="flex gap-4 lg:justify-end">
     <a
       class="enlace"
       [routerLink]="['/productos', producto.id]"

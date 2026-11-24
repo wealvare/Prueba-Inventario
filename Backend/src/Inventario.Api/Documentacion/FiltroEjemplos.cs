@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using Inventario.Aplicacion.Autenticacion.Dtos;
 using Inventario.Aplicacion.Productos.Dtos;
+using Inventario.Aplicacion.RegistrosCliente.Dtos;
 using Inventario.Aplicacion.Usuarios.Dtos;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -26,6 +27,12 @@ internal sealed class FiltroEjemplos : ISchemaFilter
             """,
         [typeof(UsuarioDto)] = """
             { "id": 3, "nombreUsuario": "ana.perez", "correo": "ana@ejemplo.com", "rol": "Consulta", "activo": true }
+            """,
+        [typeof(SolicitudRegistroCliente)] = """
+            {
+              "nivel": "Error", "mensaje": "GET /api/productos respondió 500", "ruta": "/productos", "tipo": "HttpErrorResponse",
+              "correlacion": "0f8fad5bd9cb469fa16570867728950e"
+            }
             """,
         [typeof(SolicitudCrearProducto)] = """
             {

@@ -77,6 +77,7 @@ public sealed class FabricaApi : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseSetting("UsuariosIniciales:Consulta:Contrasena", ContrasenaConsulta);
         builder.UseSetting("Cors:OrigenesPermitidos:0", OrigenPermitido);
         builder.UseSetting("LimiteInicioSesion:PeticionesPorMinuto", "1000");
+        builder.UseSetting("LimiteRegistrosCliente:PeticionesPorMinuto", "1000");
         builder.ConfigureServices(servicios => servicios.AddSingleton<ILogEventSink>(Registros));
     }
 

@@ -5,6 +5,8 @@ using Inventario.Api.Autorizacion;
 using Inventario.Api.Correlacion;
 using Inventario.Api.Documentacion;
 using Inventario.Api.Errores;
+using Inventario.Api.RegistrosCliente;
+using Inventario.Aplicacion.RegistrosCliente.Puertos.Salida;
 using Inventario.Infraestructura.Configuracion;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -19,6 +21,7 @@ namespace Inventario.Api;
 public static class RegistroApi
 {
     public const string PoliticaInicioSesion = "InicioSesion";
+    public const string PoliticaRegistrosCliente = "RegistrosCliente";
     public const string PoliticaCors = "Frontend";
 
     private static readonly TimeSpan ToleranciaReloj = TimeSpan.FromSeconds(30);
@@ -26,6 +29,7 @@ public static class RegistroApi
     public static IServiceCollection AgregarApi(this IServiceCollection servicios, IConfiguration configuracion)
     {
         AgregarControladores(servicios);
+        servicios.AddSingleton<IEscritorRegistrosCliente, EscritorRegistrosCliente>();
         AgregarAutenticacion(servicios);
         AgregarLimitePeticiones(servicios, configuracion);
         AgregarCors(servicios, configuracion);
@@ -97,7 +101,8 @@ public static class RegistroApi
 
     private static void AgregarLimitePeticiones(IServiceCollection servicios, IConfiguration configuracion)
     {
-        var peticionesPorMinuto = configuracion.GetValue("LimiteInicioSesion:PeticionesPorMinuto", 5);
+        var limiteInicioSesion = configuracion.GetValue("LimiteInicioSesion:PeticionesPorMinuto", 5);
+        var limiteRegistrosCliente = configuracion.GetValue("LimiteRegistrosCliente:PeticionesPorMinuto", 10);
 
         servicios.AddRateLimiter(opciones =>
         {
@@ -109,15 +114,19 @@ public static class RegistroApi
 
                 return ValueTask.CompletedTask;
             };
-            opciones.AddPolicy(PoliticaInicioSesion, contexto => RateLimitPartition.GetFixedWindowLimiter(
-                contexto.Connection.RemoteIpAddress?.ToString() ?? string.Empty,
-                _ => new FixedWindowRateLimiterOptions
-                {
-                    PermitLimit = peticionesPorMinuto,
-                    Window = TimeSpan.FromMinutes(1)
-                }));
+            opciones.AddPolicy(PoliticaInicioSesion, contexto => LimitarPorIp(contexto, limiteInicioSesion));
+            opciones.AddPolicy(PoliticaRegistrosCliente, contexto => LimitarPorIp(contexto, limiteRegistrosCliente));
         });
     }
+
+    private static RateLimitPartition<string> LimitarPorIp(HttpContext contexto, int peticionesPorMinuto) =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            contexto.Connection.RemoteIpAddress?.ToString() ?? string.Empty,
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = peticionesPorMinuto,
+                Window = TimeSpan.FromMinutes(1)
+            });
 
     private static void AgregarCors(IServiceCollection servicios, IConfiguration configuracion)
     {

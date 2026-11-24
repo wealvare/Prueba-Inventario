@@ -7,6 +7,10 @@ using Inventario.Aplicacion.Productos.CasosUso;
 using Inventario.Aplicacion.Productos.Dtos;
 using Inventario.Aplicacion.Productos.Puertos.Entrada;
 using Inventario.Aplicacion.Productos.Validadores;
+using Inventario.Aplicacion.RegistrosCliente.CasosUso;
+using Inventario.Aplicacion.RegistrosCliente.Dtos;
+using Inventario.Aplicacion.RegistrosCliente.Puertos.Entrada;
+using Inventario.Aplicacion.RegistrosCliente.Validadores;
 using Inventario.Aplicacion.Usuarios.CasosUso;
 using Inventario.Aplicacion.Usuarios.Dtos;
 using Inventario.Aplicacion.Usuarios.Puertos.Entrada;
@@ -33,6 +37,7 @@ public static class RegistroAplicacion
         servicios.AddScoped<IObtenerUsuario, ObtenerUsuario>();
         servicios.AddScoped<IListarUsuarios, ListarUsuarios>();
         servicios.AddScoped<IVerificarAdministrador, VerificarAdministrador>();
+        servicios.AddScoped<IRegistrarErrorCliente, RegistrarErrorCliente>();
 
         servicios.AddSingleton<IValidator<SolicitudInicioSesion>, ValidadorInicioSesion>();
         servicios.AddSingleton<IValidator<SolicitudCrearProducto>, ValidadorCrearProducto>();
@@ -42,6 +47,7 @@ public static class RegistroAplicacion
         servicios.AddSingleton<IValidator<SolicitudCrearUsuario>, ValidadorCrearUsuario>();
         servicios.AddSingleton<IValidator<SolicitudActualizarUsuario>, ValidadorActualizarUsuario>();
         servicios.AddSingleton<IValidator<FiltroUsuarios>, ValidadorFiltroUsuarios>();
+        servicios.AddSingleton<IValidator<SolicitudRegistroCliente>, ValidadorRegistroCliente>();
 
         return servicios;
     }

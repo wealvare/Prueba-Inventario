@@ -12,6 +12,9 @@
       <h1 class="titulo break-words">{{ datos.nombre }}</h1>
       <app-etiqueta-estado [activo]="datos.activo" />
     </div>
+    <div class="flex gap-3">
+      <a class="boton-secundario" [routerLink]="['/productos', datos.id, 'editar']">Editar</a>
+    </div>
   </div>
 
   <dl class="tarjeta mt-8 grid gap-6 p-6 text-sm sm:grid-cols-2">

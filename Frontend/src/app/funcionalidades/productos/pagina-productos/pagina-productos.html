@@ -1,5 +1,6 @@
 <div class="flex flex-wrap items-center justify-between gap-4">
   <h1 class="titulo">Productos</h1>
+  <a routerLink="/productos/nuevo" class="boton-principal">Nuevo producto</a>
 </div>
 
 <form
@@ -195,5 +196,12 @@
       [attr.aria-label]="'Ver ' + producto.nombre"
       >Ver</a
     >
+    <a
+      class="enlace"
+      [routerLink]="['/productos', producto.id, 'editar']"
+      [attr.aria-label]="'Editar ' + producto.nombre"
+    >
+      Editar
+    </a>
   </div>
 </ng-template>

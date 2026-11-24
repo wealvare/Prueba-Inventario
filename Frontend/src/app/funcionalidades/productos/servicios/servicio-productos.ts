@@ -3,7 +3,14 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { entorno } from '../../../../entornos/entorno';
 import { mostrarEnPantalla } from '../../../nucleo/interceptores/errores-en-pantalla';
-import { FiltroProductos, Producto, ProductoResumen, ResultadoPaginado } from '../modelos/producto';
+import {
+  FiltroProductos,
+  Producto,
+  ProductoResumen,
+  ResultadoPaginado,
+  SolicitudActualizarProducto,
+  SolicitudCrearProducto,
+} from '../modelos/producto';
 
 const URL = `${entorno.urlApi}/productos`;
 
@@ -23,5 +30,15 @@ export class ServicioProductos {
 
   obtener(id: number): Observable<Producto> {
     return this.http.get<Producto>(`${URL}/${id}`, { context: mostrarEnPantalla() });
+  }
+
+  crear(solicitud: SolicitudCrearProducto): Observable<Producto> {
+    return this.http.post<Producto>(URL, solicitud, { context: mostrarEnPantalla(400, 409) });
+  }
+
+  actualizar(id: number, solicitud: SolicitudActualizarProducto): Observable<Producto> {
+    return this.http.put<Producto>(`${URL}/${id}`, solicitud, {
+      context: mostrarEnPantalla(400, 409),
+    });
   }
 }

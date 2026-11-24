@@ -47,3 +47,17 @@ export interface Producto {
   activo: boolean;
   lotes: Lote[];
 }
+
+export type SolicitudLote = Omit<Lote, 'id'> & { id: number | null };
+
+export interface SolicitudCrearProducto {
+  codigo: string;
+  nombre: string;
+  descripcion: string;
+  categoria: string;
+  lotes: SolicitudLote[];
+}
+
+export interface SolicitudActualizarProducto extends SolicitudCrearProducto {
+  activo: boolean;
+}

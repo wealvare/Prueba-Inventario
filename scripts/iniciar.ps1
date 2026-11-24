@@ -7,6 +7,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
+$env:MSBUILDDISABLENODEREUSE = '1'
+$env:UseSharedCompilation = 'false'
 . (Join-Path $PSScriptRoot 'comun.ps1')
 
 $CarpetaBackend = Join-Path $Raiz 'Backend'

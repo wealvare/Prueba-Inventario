@@ -2,6 +2,8 @@
 set -euo pipefail
 . "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/comun.sh"
 
+export MSBUILDDISABLENODEREUSE=1
+export UseSharedCompilation=false
 sin_navegador=false
 solo_backend=false
 con_pruebas=false

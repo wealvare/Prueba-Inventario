@@ -19,6 +19,11 @@ internal static class RespuestaModeloInvalido
                 entrada => NombresCampos.ACamelCase(entrada.Key),
                 entrada => entrada.Value!.Errors.Select(error => error.ErrorMessage).ToArray());
 
+        contexto.HttpContext.RequestServices
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger(nameof(RespuestaModeloInvalido))
+            .LogInformation("Solicitud con formato no válido en {Campos}", errores.Keys);
+
         return new ResultadoProblema(Problemas.CrearValidacion(contexto.HttpContext, errores));
     }
 

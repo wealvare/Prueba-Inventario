@@ -2,6 +2,7 @@ using Inventario.Api.Correlacion;
 using Inventario.Api.Errores;
 using Microsoft.OpenApi;
 using Serilog;
+using Serilog.Events;
 
 namespace Inventario.Api;
 
@@ -11,8 +12,11 @@ public static class CanalizacionApi
     {
         aplicacion.UseResponseCompression();
         aplicacion.UseMiddleware<MiddlewareCorrelacion>();
-        aplicacion.UseSerilogRequestLogging(opciones => opciones.MessageTemplate =
-            "{RequestMethod} {RequestPath} respondió {StatusCode} en {Elapsed:0} ms");
+        aplicacion.UseSerilogRequestLogging(opciones =>
+        {
+            opciones.MessageTemplate = "{RequestMethod} {RequestPath} respondió {StatusCode} en {Elapsed:0} ms";
+            opciones.GetLevel = (contexto, _, _) => NivelRegistro(contexto.Response.StatusCode);
+        });
         aplicacion.UseMiddleware<MiddlewareErrores>();
         aplicacion.UseStatusCodePages(pagina => Problemas.EscribirAsync(
             pagina.HttpContext,
@@ -35,4 +39,10 @@ public static class CanalizacionApi
         return aplicacion;
     }
 
+    private static LogEventLevel NivelRegistro(int estado) => estado switch
+    {
+        >= StatusCodes.Status500InternalServerError => LogEventLevel.Error,
+        >= StatusCodes.Status400BadRequest => LogEventLevel.Warning,
+        _ => LogEventLevel.Information
+    };
 }

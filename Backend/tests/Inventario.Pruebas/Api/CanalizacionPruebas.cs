@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using Inventario.Aplicacion.Productos.Dtos;
 using Inventario.Aplicacion.Productos.Puertos.Entrada;
@@ -36,6 +37,31 @@ public sealed class CanalizacionPruebas(FabricaApi fabrica)
             evento.Level == LogEventLevel.Error
             && evento.Exception?.Message == "detalle interno"
             && evento.Properties["Correlacion"].ToString() == "\"prueba-error-500\"");
+    }
+
+    [Theory]
+    [InlineData("GET", "/api/productos", null, "", HttpStatusCode.Unauthorized)]
+    [InlineData("DELETE", "/api/productos/1", RolUsuario.Consulta, "", HttpStatusCode.Forbidden)]
+    [InlineData("GET", "/api/productos/999999", RolUsuario.Consulta, "", HttpStatusCode.NotFound)]
+    [InlineData("POST", "/api/productos", RolUsuario.Administrador, "{ no es json", HttpStatusCode.BadRequest)]
+    public async Task Rechazos_QuedanRegistradosConSuCorrelacion(
+        string metodo, string ruta, RolUsuario? rol, string cuerpo, HttpStatusCode estado)
+    {
+        var correlacion = Guid.NewGuid().ToString("N");
+        var solicitud = new HttpRequestMessage(new HttpMethod(metodo), ruta);
+        solicitud.Headers.Add("X-Correlacion", correlacion);
+
+        if (cuerpo.Length > 0)
+            solicitud.Content = new StringContent(cuerpo, Encoding.UTF8, "application/json");
+
+        var cliente = rol is null ? fabrica.CreateClient() : fabrica.ClienteCon(rol.Value);
+        var problema = await (await cliente.SendAsync(solicitud)).ProblemaAsync(estado);
+
+        Assert.False(string.IsNullOrEmpty(problema.Detalle()));
+        Assert.Contains(fabrica.Registros.Eventos, evento =>
+            evento.Level == LogEventLevel.Warning
+            && evento.Properties.GetValueOrDefault("Correlacion")?.ToString() == $"\"{correlacion}\""
+            && evento.Properties.GetValueOrDefault("StatusCode")?.ToString() == ((int)estado).ToString());
     }
 
     [Theory]

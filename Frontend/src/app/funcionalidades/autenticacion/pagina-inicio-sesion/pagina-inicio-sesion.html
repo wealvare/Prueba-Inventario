@@ -3,35 +3,38 @@
   <p class="mt-2 text-sm text-neutral-600">Inicia sesión para continuar.</p>
 
   <form class="mt-8 flex flex-col gap-5" [formGroup]="formulario" (ngSubmit)="iniciarSesion()">
-    <label class="flex flex-col gap-2 text-sm font-medium">
-      Usuario
+    @let usuario = formulario.controls.nombreUsuario;
+    @let contrasena = formulario.controls.contrasena;
+
+    <app-campo idControl="usuario" etiqueta="Usuario" [error]="mensaje(usuario)">
       <input
+        id="usuario"
         type="text"
-        formControlName="nombreUsuario"
+        class="campo"
         autocomplete="username"
-        class="rounded-lg border border-neutral-300 bg-white px-3 py-2.5 font-normal"
+        aria-describedby="usuario-error"
+        [formControl]="usuario"
+        [attr.aria-invalid]="mensaje(usuario) !== null"
       />
-    </label>
+    </app-campo>
 
-    <label class="flex flex-col gap-2 text-sm font-medium">
-      Contraseña
+    <app-campo idControl="contrasena" etiqueta="Contraseña" [error]="mensaje(contrasena)">
       <input
+        id="contrasena"
         type="password"
-        formControlName="contrasena"
+        class="campo"
         autocomplete="current-password"
-        class="rounded-lg border border-neutral-300 bg-white px-3 py-2.5 font-normal"
+        aria-describedby="contrasena-error"
+        [formControl]="contrasena"
+        [attr.aria-invalid]="mensaje(contrasena) !== null"
       />
-    </label>
+    </app-campo>
 
-    @if (faltanDatos()) {
-      <p role="alert" class="text-sm text-red-700">Escribe tu usuario y tu contraseña.</p>
+    @if (errorServidor(); as error) {
+      <p role="alert" class="aviso-error">{{ error }}</p>
     }
 
-    <button
-      type="submit"
-      class="rounded-lg bg-acento px-4 py-2.5 text-sm font-medium text-white hover:bg-acento-fuerte disabled:opacity-60"
-      [disabled]="enviando()"
-    >
+    <button type="submit" class="boton-principal" [disabled]="enviando()">
       {{ enviando() ? 'Ingresando…' : 'Ingresar' }}
     </button>
   </form>

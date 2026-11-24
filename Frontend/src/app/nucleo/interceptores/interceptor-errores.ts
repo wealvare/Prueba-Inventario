@@ -5,6 +5,7 @@ import { traducirError } from '../errores/traducir-error';
 import { ServicioAutenticacion, URL_INICIO_SESION } from '../servicios/servicio-autenticacion';
 import { ServicioNotificaciones } from '../servicios/servicio-notificaciones';
 import { ServicioRegistro } from '../servicios/servicio-registro';
+import { ERRORES_EN_PANTALLA } from './errores-en-pantalla';
 import { esUrlApi } from './es-url-api';
 
 export const interceptorErrores: HttpInterceptorFn = (peticion, siguiente) => {
@@ -38,7 +39,7 @@ export const interceptorErrores: HttpInterceptorFn = (peticion, siguiente) => {
 
       if (error.estado === 401 && peticion.url !== URL_INICIO_SESION) {
         autenticacion.expirarSesion();
-      } else {
+      } else if (!peticion.context.get(ERRORES_EN_PANTALLA)(error.estado)) {
         notificaciones.error(error.message, error.estado >= 500 ? error.correlacion : undefined);
       }
 

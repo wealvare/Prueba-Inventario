@@ -1,0 +1,7 @@
+<div class="flex flex-col gap-2">
+  <label class="text-sm font-medium" [for]="idControl()">{{ etiqueta() }}</label>
+  <ng-content />
+  @if (error(); as mensaje) {
+    <p class="text-sm text-red-700" [id]="idControl() + '-error'">{{ mensaje }}</p>
+  }
+</div>

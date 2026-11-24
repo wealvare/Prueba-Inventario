@@ -15,3 +15,45 @@
     @apply outline-2 outline-offset-2 outline-acento;
   }
 }
+
+@layer components {
+  .titulo {
+    @apply text-2xl font-semibold tracking-tight text-neutral-900;
+  }
+
+  .tarjeta {
+    @apply rounded-xl border border-neutral-200 bg-white;
+  }
+
+  .celda {
+    @apply px-4 py-3.5;
+  }
+
+  .campo {
+    @apply w-full rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-sm aria-invalid:border-red-700;
+  }
+
+  .boton-principal {
+    @apply inline-block cursor-pointer rounded-lg bg-acento px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-acento-fuerte disabled:cursor-default disabled:opacity-60;
+  }
+
+  .boton-secundario {
+    @apply inline-block cursor-pointer rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-center text-sm font-medium hover:border-acento hover:text-acento disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .boton-peligro {
+    @apply inline-block cursor-pointer rounded-lg border border-red-700 px-4 py-2.5 text-sm font-medium text-red-700 hover:bg-red-50 disabled:cursor-default disabled:opacity-60;
+  }
+
+  .enlace {
+    @apply text-sm font-medium text-acento hover:underline;
+  }
+
+  .enlace-peligro {
+    @apply cursor-pointer text-sm font-medium text-red-700 hover:underline;
+  }
+
+  .aviso-error {
+    @apply rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800;
+  }
+}

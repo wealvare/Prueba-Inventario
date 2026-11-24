@@ -3,6 +3,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { entorno } from '../../../entornos/entorno';
+import { mostrarEnPantalla } from '../interceptores/errores-en-pantalla';
 import { RespuestaInicioSesion, SolicitudInicioSesion, Usuario } from '../modelos/sesion';
 import { ErrorApi } from '../modelos/error-api';
 import { AlmacenToken } from './almacen-token';
@@ -37,12 +38,15 @@ export class ServicioAutenticacion {
   }
 
   iniciarSesion(solicitud: SolicitudInicioSesion): Observable<RespuestaInicioSesion> {
-    return this.http.post<RespuestaInicioSesion>(URL_INICIO_SESION, solicitud).pipe(
+    const context = mostrarEnPantalla();
+
+    return this.http.post<RespuestaInicioSesion>(URL_INICIO_SESION, solicitud, { context }).pipe(
       tap(({ token }) => {
         if (!this.establecer(token)) {
-          const mensaje = 'No se pudo iniciar la sesión. Revisa la fecha y hora de tu equipo.';
-          this.notificaciones.error(mensaje);
-          throw new ErrorApi(0, mensaje);
+          throw new ErrorApi(
+            0,
+            'No se pudo iniciar la sesión. Revisa la fecha y hora de tu equipo.',
+          );
         }
 
         this.almacen.guardar(token);

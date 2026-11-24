@@ -1,12 +1,16 @@
 import { Component, inject, input, signal } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
+import { Campo } from '../../../compartido/formularios/campo';
+import { mensajeError } from '../../../compartido/formularios/mensaje-error';
+import { textoRequerido } from '../../../compartido/formularios/validadores';
+import { ErrorApi } from '../../../nucleo/modelos/error-api';
 import { ServicioAutenticacion } from '../../../nucleo/servicios/servicio-autenticacion';
 import { rutaSegura } from '../ruta-segura';
 
 @Component({
-  imports: [ReactiveFormsModule],
+  imports: [Campo, ReactiveFormsModule],
   selector: 'app-pagina-inicio-sesion',
   templateUrl: './pagina-inicio-sesion.html',
 })
@@ -17,16 +21,25 @@ export class PaginaInicioSesion {
   readonly retorno = input<string>();
 
   protected readonly enviando = signal(false);
-  protected readonly faltanDatos = signal(false);
+  protected readonly errorServidor = signal<string | null>(null);
   protected readonly formulario = inject(NonNullableFormBuilder).group({
-    nombreUsuario: ['', Validators.required],
-    contrasena: ['', Validators.required],
+    nombreUsuario: ['', textoRequerido],
+    contrasena: ['', textoRequerido],
   });
 
-  protected iniciarSesion(): void {
-    this.faltanDatos.set(this.formulario.invalid);
+  protected mensaje(control: FormControl<string>): string | null {
+    return mensajeError(control);
+  }
 
-    if (this.formulario.invalid || this.enviando()) {
+  protected iniciarSesion(): void {
+    if (this.enviando()) {
+      return;
+    }
+
+    this.errorServidor.set(null);
+
+    if (this.formulario.invalid) {
+      this.formulario.markAllAsTouched();
       return;
     }
 
@@ -36,7 +49,10 @@ export class PaginaInicioSesion {
       .pipe(finalize(() => this.enviando.set(false)))
       .subscribe({
         next: () => void this.router.navigateByUrl(rutaSegura(this.retorno())),
-        error: () => this.formulario.controls.contrasena.reset(),
+        error: (error: ErrorApi) => {
+          this.formulario.controls.contrasena.reset();
+          this.errorServidor.set(error.message);
+        },
       });
   }
 }

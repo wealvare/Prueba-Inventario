@@ -1,0 +1,24 @@
+<nav aria-label="Paginación" class="flex flex-wrap items-center justify-between gap-4 text-sm">
+  <p class="text-neutral-600" role="status">
+    {{ totalElementos() }} {{ totalElementos() === 1 ? 'resultado' : 'resultados' }} · Página
+    {{ pagina() }} de {{ totalPaginas() }}
+  </p>
+  <div class="flex gap-2">
+    <button
+      type="button"
+      class="boton-secundario"
+      [disabled]="pagina() <= 1"
+      (click)="cambiar.emit(pagina() - 1)"
+    >
+      Anterior
+    </button>
+    <button
+      type="button"
+      class="boton-secundario"
+      [disabled]="pagina() >= totalPaginas()"
+      (click)="cambiar.emit(pagina() + 1)"
+    >
+      Siguiente
+    </button>
+  </div>
+</nav>

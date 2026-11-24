@@ -5,7 +5,7 @@ import {
   provideHttpClientTesting,
   TestRequest,
 } from '@angular/common/http/testing';
-import localeEsCo from '@angular/common/locales/es-CO';
+import localeEsEc from '@angular/common/locales/es-EC';
 import { LOCALE_ID, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
@@ -40,13 +40,13 @@ describe('PaginaProductos', () => {
     categorias: string[] | null = ['Periféricos', 'Redes'],
   ) => {
     prepararDialogo();
-    registerLocaleData(localeEsCo);
+    registerLocaleData(localeEsEc);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([{ path: 'productos', component: PaginaProductos }]),
         provideHttpClient(withInterceptors([interceptorErrores])),
         provideHttpClientTesting(),
-        { provide: LOCALE_ID, useValue: 'es-CO' },
+        { provide: LOCALE_ID, useValue: 'es-EC' },
         { provide: ServicioAutenticacion, useValue: { esAdministrador, expirarSesion: vi.fn() } },
         { provide: ServicioRegistro, useValue: { advertencia: vi.fn(), error: vi.fn() } },
       ],
@@ -95,7 +95,7 @@ describe('PaginaProductos', () => {
     const fila = elemento.querySelector('tbody tr')?.textContent;
     expect(fila).toContain('TEC-1');
     expect(fila).toContain('1.500');
-    expect(fila).toContain('12,50');
+    expect(fila).toContain('$12,50');
     expect(elemento.querySelector('app-paginador')?.textContent).toContain('Página 1 de 3');
   });
 

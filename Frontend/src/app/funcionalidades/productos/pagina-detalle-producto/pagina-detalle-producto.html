@@ -61,7 +61,7 @@
             <tr>
               <td class="celda whitespace-nowrap">{{ lote.fechaIngreso | date: 'dd/MM/yyyy' }}</td>
               <td class="celda">{{ lote.numeroLote }}</td>
-              <td class="celda text-right">{{ lote.precio | number: '1.2-2' }}</td>
+              <td class="celda text-right">{{ lote.precio | currency }}</td>
               <td class="celda text-right">{{ lote.cantidad | number }}</td>
             </tr>
           }

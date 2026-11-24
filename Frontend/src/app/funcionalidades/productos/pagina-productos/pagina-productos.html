@@ -129,10 +129,10 @@
                 <td class="celda">{{ producto.categoria }}</td>
                 <td class="celda text-right">{{ producto.cantidadTotal | number }}</td>
                 <td class="celda text-right">
-                  {{ (producto.precioMinimo | number: '1.2-2') ?? '—' }}
+                  {{ (producto.precioMinimo | currency) ?? '—' }}
                 </td>
                 <td class="celda text-right">
-                  {{ (producto.precioMaximo | number: '1.2-2') ?? '—' }}
+                  {{ (producto.precioMaximo | currency) ?? '—' }}
                 </td>
                 <td class="celda"><app-etiqueta-estado [activo]="producto.activo" /></td>
                 <td class="celda">
@@ -166,11 +166,11 @@
               </div>
               <div>
                 <dt class="text-neutral-500">Precio mín.</dt>
-                <dd>{{ (producto.precioMinimo | number: '1.2-2') ?? '—' }}</dd>
+                <dd>{{ (producto.precioMinimo | currency) ?? '—' }}</dd>
               </div>
               <div>
                 <dt class="text-neutral-500">Precio máx.</dt>
-                <dd>{{ (producto.precioMaximo | number: '1.2-2') ?? '—' }}</dd>
+                <dd>{{ (producto.precioMaximo | currency) ?? '—' }}</dd>
               </div>
             </dl>
             <div class="mt-4">

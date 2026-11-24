@@ -1,5 +1,5 @@
 import { registerLocaleData } from '@angular/common';
-import localeEsCo from '@angular/common/locales/es-CO';
+import localeEsEc from '@angular/common/locales/es-EC';
 import { LOCALE_ID, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
@@ -11,11 +11,11 @@ import { PaginaDetalleProducto } from './pagina-detalle-producto';
 
 describe('PaginaDetalleProducto', () => {
   const preparar = async (administrador: boolean, activo = true) => {
-    registerLocaleData(localeEsCo);
+    registerLocaleData(localeEsEc);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: LOCALE_ID, useValue: 'es-CO' },
+        { provide: LOCALE_ID, useValue: 'es-EC' },
         { provide: ServicioProductos, useValue: { obtener: () => of({ ...PRODUCTO, activo }) } },
         { provide: ServicioAutenticacion, useValue: { esAdministrador: signal(administrador) } },
       ],
@@ -34,8 +34,8 @@ describe('PaginaDetalleProducto', () => {
     );
     expect(elemento.querySelector('h1')?.textContent).toContain('Teclado');
     expect(filas).toEqual([
-      ['15/01/2026', 'L-1', '10,00', '5'],
-      ['15/02/2026', 'L-2', '12,50', '0'],
+      ['15/01/2026', 'L-1', '$10,00', '5'],
+      ['15/02/2026', 'L-2', '$12,50', '0'],
     ]);
   });
 

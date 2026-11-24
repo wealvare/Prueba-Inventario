@@ -1,4 +1,4 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { Component, inject, input, numberAttribute, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
@@ -8,7 +8,7 @@ import { ConfirmacionEliminar } from '../confirmacion-eliminar/confirmacion-elim
 import { ServicioProductos } from '../servicios/servicio-productos';
 
 @Component({
-  imports: [ConfirmacionEliminar, DatePipe, DecimalPipe, EtiquetaEstado, RouterLink],
+  imports: [ConfirmacionEliminar, CurrencyPipe, DatePipe, DecimalPipe, EtiquetaEstado, RouterLink],
   selector: 'app-pagina-detalle-producto',
   templateUrl: './pagina-detalle-producto.html',
 })

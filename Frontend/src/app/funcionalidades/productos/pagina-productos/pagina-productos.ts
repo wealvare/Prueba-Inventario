@@ -1,4 +1,4 @@
-import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
+import { CurrencyPipe, DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { rxResource, takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -19,6 +19,7 @@ const RETARDO_MS = 400;
   imports: [
     Campo,
     ConfirmacionEliminar,
+    CurrencyPipe,
     DecimalPipe,
     EtiquetaEstado,
     NgTemplateOutlet,

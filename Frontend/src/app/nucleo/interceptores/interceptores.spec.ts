@@ -21,7 +21,7 @@ const URL = `${entorno.urlApi}/productos`;
 
 describe('Interceptores', () => {
   const autenticacion = { obtenerToken: vi.fn(), expirarSesion: vi.fn() };
-  const registro = { advertencia: vi.fn(), error: vi.fn() };
+  const registro = { advertencia: vi.fn(), advertenciaImportante: vi.fn(), error: vi.fn() };
   let controlador: HttpTestingController;
 
   const fallar = (
@@ -191,6 +191,13 @@ describe('Interceptores', () => {
         estado: 500,
         correlacion: 'c-2',
       });
+    });
+
+    it.each([403, 405, 429])('registra el estado %i como advertencia importante', (estado) => {
+      fallar(estado);
+
+      expect(registro.advertenciaImportante).toHaveBeenCalledOnce();
+      expect(registro.advertencia).not.toHaveBeenCalled();
     });
 
     it('no repite una notificación con el mismo mensaje', () => {

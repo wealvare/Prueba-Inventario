@@ -8,6 +8,8 @@ import { ServicioRegistro } from '../servicios/servicio-registro';
 import { ERRORES_EN_PANTALLA } from './errores-en-pantalla';
 import { esUrlApi } from './es-url-api';
 
+const ADVERTENCIAS_ESPERADAS = [400, 401, 404, 409];
+
 export const interceptorErrores: HttpInterceptorFn = (peticion, siguiente) => {
   if (!esUrlApi(peticion.url)) {
     return siguiente(peticion);
@@ -33,8 +35,10 @@ export const interceptorErrores: HttpInterceptorFn = (peticion, siguiente) => {
 
       if (error.estado === 0 || error.estado >= 500 || esRespuestaInvalida(error.estado)) {
         registro.error(error.message, datos);
-      } else {
+      } else if (ADVERTENCIAS_ESPERADAS.includes(error.estado)) {
         registro.advertencia(error.message, datos);
+      } else {
+        registro.advertenciaImportante(error.message, datos);
       }
 
       if (error.estado === 401 && peticion.url !== URL_INICIO_SESION) {

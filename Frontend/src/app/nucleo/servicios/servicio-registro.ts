@@ -1,13 +1,23 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { DatosRegistro } from '../modelos/registro-cliente';
+import { EnvioRegistros } from './envio-registros';
 
 @Injectable({ providedIn: 'root' })
 export class ServicioRegistro {
-  advertencia(mensaje: string, datos: Record<string, unknown> = {}): void {
+  private readonly envio = inject(EnvioRegistros);
+
+  advertencia(mensaje: string, datos: DatosRegistro = {}): void {
     console.warn(this.prefijo(), mensaje, datos);
   }
 
-  error(mensaje: string, datos: Record<string, unknown> = {}): void {
+  advertenciaImportante(mensaje: string, datos: DatosRegistro = {}): void {
+    this.advertencia(mensaje, datos);
+    this.envio.enviar('Advertencia', mensaje, datos);
+  }
+
+  error(mensaje: string, datos: DatosRegistro = {}): void {
     console.error(this.prefijo(), mensaje, datos);
+    this.envio.enviar('Error', mensaje, datos);
   }
 
   private prefijo(): string {

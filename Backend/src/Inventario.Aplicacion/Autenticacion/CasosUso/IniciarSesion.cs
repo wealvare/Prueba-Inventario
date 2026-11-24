@@ -18,7 +18,10 @@ public sealed class IniciarSesion(
 
         var usuario = await repositorio.ObtenerPorNombreUsuarioAsync(solicitud.NombreUsuario.Trim(), cancelacion);
 
-        if (usuario is null || !hasheador.Verificar(solicitud.Contrasena, usuario.HashContrasena))
+        var contrasenaValida = hasheador.Verificar(
+            solicitud.Contrasena, usuario?.HashContrasena ?? hasheador.HashFicticio);
+
+        if (usuario is null || !contrasenaValida)
             throw new ExcepcionCredencialesInvalidas();
 
         var token = servicioToken.Generar(usuario);

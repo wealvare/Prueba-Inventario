@@ -26,6 +26,10 @@ public sealed class HasheadorContrasenaPruebas
     }
 
     [Fact]
+    public void HashFicticio_TieneElMismoCosteQueUnoReal() =>
+        Assert.Equal(_hasheador.Hashear("una-clave")[..7], _hasheador.HashFicticio[..7]);
+
+    [Fact]
     public void Hashear_UsaUnaSalDistintaCadaVez() =>
         Assert.NotEqual(_hasheador.Hashear("una-clave"), _hasheador.Hashear("una-clave"));
 

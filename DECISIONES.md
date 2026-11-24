@@ -52,7 +52,7 @@ El filtro `estado` admite activos, inactivos y todos. Si no se indica, se listan
 
 ## Contraseñas y tokens
 
-Las contraseñas se guardan con BCrypt, factor 12 y prehash SHA-384 para no truncar a 72 bytes. El token incluye el rol, y su clave, emisor, audiencia y expiración provienen de la configuración.
+Las contraseñas se guardan con BCrypt, factor 12 y prehash SHA-384 para no truncar a 72 bytes. El token incluye el rol, y su clave, emisor, audiencia y expiración provienen de la configuración. Al iniciar sesión siempre se verifica un hash: si el usuario no existe, uno ficticio con el mismo coste, para que los tiempos de respuesta no revelen qué usuarios existen.
 
 ## Datos iniciales
 

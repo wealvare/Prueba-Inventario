@@ -22,6 +22,7 @@ public sealed class IniciarSesionPruebas
         _casoUso = new IniciarSesion(_repositorio, _hasheador, _servicioToken, new ValidadorInicioSesion());
         _repositorio.ObtenerPorNombreUsuarioAsync("admin", Arg.Any<CancellationToken>()).Returns(_usuario);
         _hasheador.Verificar("clave", "hash").Returns(true);
+        _hasheador.HashFicticio.Returns("ficticio");
     }
 
     [Fact]
@@ -43,6 +44,17 @@ public sealed class IniciarSesionPruebas
         await Assert.ThrowsAsync<ExcepcionCredencialesInvalidas>(() =>
             _casoUso.EjecutarAsync(new(nombreUsuario, contrasena), CancellationToken.None));
         _servicioToken.DidNotReceiveWithAnyArgs().Generar(default!);
+    }
+
+    [Fact]
+    public async Task ConUsuarioInexistente_VerificaElHashFicticioYFalla()
+    {
+        _hasheador.Verificar("clave", "ficticio").Returns(true);
+
+        await Assert.ThrowsAsync<ExcepcionCredencialesInvalidas>(() =>
+            _casoUso.EjecutarAsync(new("desconocido", "clave"), CancellationToken.None));
+
+        _hasheador.Received(1).Verificar("clave", "ficticio");
     }
 
     [Theory]

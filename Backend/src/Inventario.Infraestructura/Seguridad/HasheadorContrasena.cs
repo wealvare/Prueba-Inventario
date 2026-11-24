@@ -7,6 +7,8 @@ public sealed class HasheadorContrasena : IHasheadorContrasena
 {
     private const int FactorTrabajo = 12;
 
+    public string HashFicticio { get; } = BC.EnhancedHashPassword(Guid.NewGuid().ToString(), FactorTrabajo);
+
     public string Hashear(string contrasena) => BC.EnhancedHashPassword(contrasena, FactorTrabajo);
 
     public bool Verificar(string contrasena, string hash)

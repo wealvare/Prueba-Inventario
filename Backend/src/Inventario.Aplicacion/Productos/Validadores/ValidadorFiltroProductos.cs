@@ -16,6 +16,8 @@ public sealed class ValidadorFiltroProductos : AbstractValidator<FiltroProductos
         RuleFor(filtro => filtro.TamanoPagina)
             .InclusiveBetween(1, TamanoMaximo).WithMessage($"El tamaño de página debe estar entre 1 y {TamanoMaximo}.");
 
+        RuleFor(filtro => filtro.Estado).IsInEnum().WithMessage("El estado debe ser activos, inactivos o todos.");
+
         RuleFor(filtro => filtro.PrecioMinimo)
             .GreaterThanOrEqualTo(0).WithMessage("El precio mínimo no puede ser negativo.");
 

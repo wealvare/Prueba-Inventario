@@ -7,11 +7,16 @@ internal static class CondicionesProductos
 {
     public static (string Sql, DynamicParameters Parametros) Construir(FiltroProductos filtro)
     {
-        var condiciones = new List<string> { "producto.Activo = @activo" };
+        var condiciones = new List<string>();
         var parametros = new DynamicParameters();
-        parametros.Add("activo", filtro.Activo ?? true);
         parametros.Add("desplazamiento", (filtro.Pagina - 1) * filtro.TamanoPagina);
         parametros.Add("tamanoPagina", filtro.TamanoPagina);
+
+        if (filtro.Estado != EstadoProductos.Todos)
+        {
+            condiciones.Add("producto.Activo = @activo");
+            parametros.Add("activo", filtro.Estado == EstadoProductos.Activos);
+        }
 
         if (!string.IsNullOrWhiteSpace(filtro.Busqueda))
         {
@@ -44,6 +49,6 @@ internal static class CondicionesProductos
             parametros.Add("precioMaximo", filtro.PrecioMaximo);
         }
 
-        return (string.Join(" AND ", condiciones), parametros);
+        return (condiciones.Count == 0 ? "1 = 1" : string.Join(" AND ", condiciones), parametros);
     }
 }

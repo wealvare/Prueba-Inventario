@@ -5,6 +5,6 @@ public sealed record FiltroProductos(
     int TamanoPagina = 10,
     string? Busqueda = null,
     string? Categoria = null,
-    bool? Activo = null,
+    EstadoProductos Estado = EstadoProductos.Activos,
     decimal? PrecioMinimo = null,
     decimal? PrecioMaximo = null);

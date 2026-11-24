@@ -157,7 +157,7 @@ public sealed class ProductosPruebas
     [Fact]
     public async Task Listar_EnviaLosFiltrosAlRepositorio()
     {
-        var filtro = new FiltroProductos(2, 10, "tec", "Periféricos", true, 5, 20);
+        var filtro = new FiltroProductos(2, 10, "tec", "Periféricos", EstadoProductos.Todos, 5, 20);
         var pagina = new ResultadoPaginado<ProductoResumenDto>([], 2, 10, 21);
         _repositorio.ListarAsync(filtro, Arg.Any<CancellationToken>()).Returns(pagina);
 
@@ -179,6 +179,11 @@ public sealed class ProductosPruebas
             Listar.EjecutarAsync(
                 new FiltroProductos(pagina, tamano, PrecioMinimo: minimo, PrecioMaximo: maximo),
                 CancellationToken.None));
+
+    [Fact]
+    public async Task Listar_ConEstadoInexistente_FallaLaValidacion() =>
+        await Assert.ThrowsAsync<ValidationException>(() =>
+            Listar.EjecutarAsync(new FiltroProductos(Estado: (EstadoProductos)9), CancellationToken.None));
 
     private async Task VerificarSinGuardar() =>
         await _repositorio.DidNotReceiveWithAnyArgs().GuardarCambiosAsync(default);

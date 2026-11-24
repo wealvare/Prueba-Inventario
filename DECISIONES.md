@@ -46,9 +46,9 @@ Dentro de la transacción se eliminan los lotes ausentes, se actualizan los exis
 
 Los índices únicos son la garantía final ante peticiones simultáneas. El repositorio identifica el índice infringido en los errores 2601 y 2627 y lanza la excepción de dominio correspondiente.
 
-## Listado de productos activos
+## Estado en el listado
 
-Si no se indica el filtro `activo`, solo se listan los productos activos.
+El filtro `estado` admite activos, inactivos y todos. Si no se indica, se listan los activos.
 
 ## Contraseñas y tokens
 

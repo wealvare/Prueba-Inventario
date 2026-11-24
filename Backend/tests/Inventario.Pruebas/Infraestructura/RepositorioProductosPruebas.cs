@@ -210,15 +210,16 @@ public sealed class RepositorioProductosPruebas(BaseDatosFixture baseDatos)
     }
 
     [Fact]
-    public async Task Listar_ExcluyeInactivosPorDefecto()
+    public async Task Listar_FiltraPorEstado()
     {
         var categoria = Unico();
         var activo = await GuardarAsync(categoria);
         var inactivo = await GuardarAsync(categoria, activo: false);
 
         Assert.Equal([activo.Id], await IdsAsync(new(Categoria: categoria)));
-        Assert.Equal([activo.Id], await IdsAsync(new(Categoria: categoria, Activo: true)));
-        Assert.Equal([inactivo.Id], await IdsAsync(new(Categoria: categoria, Activo: false)));
+        Assert.Equal([activo.Id], await IdsAsync(new(Categoria: categoria, Estado: EstadoProductos.Activos)));
+        Assert.Equal([inactivo.Id], await IdsAsync(new(Categoria: categoria, Estado: EstadoProductos.Inactivos)));
+        Assert.Equal([activo.Id, inactivo.Id], await IdsAsync(new(Categoria: categoria, Estado: EstadoProductos.Todos)));
     }
 
     [Fact]

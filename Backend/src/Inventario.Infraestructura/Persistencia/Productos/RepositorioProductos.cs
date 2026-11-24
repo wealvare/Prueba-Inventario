@@ -58,13 +58,10 @@ public sealed class RepositorioProductos(IFabricaConexion fabrica, EjecutorTrans
     {
         var id = 0;
 
-        await GuardarAsync(producto, async transaccion =>
-        {
-            id = await transaccion.Connection!.ExecuteScalarAsync<int>(new CommandDefinition(
-                SqlProductos.Insertar, Datos(producto), transaccion, cancellationToken: cancelacion));
-
-            await InsertarLotesAsync(id, producto.Lotes, transaccion, cancelacion);
-        }, cancelacion);
+        await GuardarAsync(
+            producto,
+            async transaccion => id = await InsertarAsync(producto, transaccion, cancelacion),
+            cancelacion);
 
         return (await ObtenerPorIdAsync(id, cancelacion))!;
     }
@@ -80,6 +77,18 @@ public sealed class RepositorioProductos(IFabricaConexion fabrica, EjecutorTrans
         }, cancelacion);
 
         return (await ObtenerPorIdAsync(producto.Id, cancelacion))!;
+    }
+
+    internal static async Task<int> InsertarAsync(
+        Producto producto,
+        DbTransaction transaccion,
+        CancellationToken cancelacion)
+    {
+        var id = await transaccion.Connection!.ExecuteScalarAsync<int>(new CommandDefinition(
+            SqlProductos.Insertar, Datos(producto), transaccion, cancellationToken: cancelacion));
+
+        await InsertarLotesAsync(id, producto.Lotes, transaccion, cancelacion);
+        return id;
     }
 
     private static async Task SincronizarLotesAsync(

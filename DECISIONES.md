@@ -56,7 +56,7 @@ Las contraseñas se guardan con BCrypt, factor 12 y prehash SHA-384 para no trun
 
 ## Datos iniciales
 
-Los usuarios se crean si no existen, con contraseñas tomadas de la configuración. Los 15 productos se cargan solo si la tabla está vacía.
+Los usuarios se crean si no existen, con contraseñas tomadas de la configuración. Los 15 productos se cargan solo si la tabla está vacía. Todo ocurre en una transacción con bloqueo de tabla, así que un fallo no deja datos parciales y dos arranques simultáneos no los duplican.
 
 ## Edición simultánea
 

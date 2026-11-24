@@ -88,7 +88,7 @@ public sealed class AutenticacionPruebas(FabricaApi fabrica)
     public async Task ConTokenInvalido_Devuelve401(string clave, string emisor, string audiencia, int minutos)
     {
         var reloj = new RelojDesplazado(TimeSpan.FromMinutes(minutos));
-        var usuario = Usuario.Reconstruir(1, "admin", "admin@inventario.local", "hash", RolUsuario.Administrador);
+        var usuario = Usuario.Reconstruir(1, "admin", "admin@inventario.local", "hash", RolUsuario.Administrador, true);
         var token = new ServicioToken(new OpcionesJwt(clave, emisor, audiencia, 30), reloj).Generar(usuario);
 
         var respuesta = await fabrica.ClienteCon(token.Valor).GetAsync("/api/productos");

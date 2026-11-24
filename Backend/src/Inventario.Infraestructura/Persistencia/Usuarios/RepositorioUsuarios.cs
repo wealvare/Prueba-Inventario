@@ -8,7 +8,7 @@ namespace Inventario.Infraestructura.Persistencia.Usuarios;
 public sealed class RepositorioUsuarios(IFabricaConexion fabrica) : IRepositorioUsuarios
 {
     private const string ObtenerPorNombre = """
-        SELECT Id, NombreUsuario, Correo, HashContrasena, Rol
+        SELECT Id, NombreUsuario, Correo, HashContrasena, Rol, Activo
         FROM dbo.Usuarios
         WHERE NombreUsuario = @nombreUsuario;
         """;

@@ -17,10 +17,11 @@ public sealed class EsquemaPruebas(BaseDatosFixture baseDatos)
         var scripts = (await conexion.QueryAsync<string>(
             "SELECT ScriptName FROM dbo.VersionesEsquema ORDER BY Id")).AsList();
 
-        Assert.Equal(3, scripts.Count);
+        Assert.Equal(4, scripts.Count);
         Assert.EndsWith("001_crear_tablas.sql", scripts[0]);
         Assert.EndsWith("002_indices.sql", scripts[1]);
         Assert.EndsWith("003_indices_listado.sql", scripts[2]);
+        Assert.EndsWith("004_usuarios_activo.sql", scripts[3]);
     }
 
     [Theory]
@@ -40,6 +41,8 @@ public sealed class EsquemaPruebas(BaseDatosFixture baseDatos)
     }
 
     [Theory]
+    [InlineData("UX_Usuarios_NombreUsuario", true)]
+    [InlineData("UX_Usuarios_Correo", true)]
     [InlineData("UX_Productos_Codigo", true)]
     [InlineData("UX_LotesProducto_ProductoId_NumeroLote", true)]
     [InlineData("IX_LotesProducto_FechaIngreso", false)]

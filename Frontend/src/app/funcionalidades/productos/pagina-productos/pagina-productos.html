@@ -1,6 +1,8 @@
 <div class="flex flex-wrap items-center justify-between gap-4">
   <h1 class="titulo">Productos</h1>
-  <a routerLink="/productos/nuevo" class="boton-principal">Nuevo producto</a>
+  @if (esAdministrador()) {
+    <a routerLink="/productos/nuevo" class="boton-principal">Nuevo producto</a>
+  }
 </div>
 
 <form
@@ -196,22 +198,24 @@
       [attr.aria-label]="'Ver ' + producto.nombre"
       >Ver</a
     >
-    <a
-      class="enlace"
-      [routerLink]="['/productos', producto.id, 'editar']"
-      [attr.aria-label]="'Editar ' + producto.nombre"
-    >
-      Editar
-    </a>
-    @if (producto.activo) {
-      <button
-        type="button"
-        class="enlace-peligro"
-        [attr.aria-label]="'Eliminar ' + producto.nombre"
-        (click)="porEliminar.set(producto)"
+    @if (esAdministrador()) {
+      <a
+        class="enlace"
+        [routerLink]="['/productos', producto.id, 'editar']"
+        [attr.aria-label]="'Editar ' + producto.nombre"
       >
-        Eliminar
-      </button>
+        Editar
+      </a>
+      @if (producto.activo) {
+        <button
+          type="button"
+          class="enlace-peligro"
+          [attr.aria-label]="'Eliminar ' + producto.nombre"
+          (click)="porEliminar.set(producto)"
+        >
+          Eliminar
+        </button>
+      }
     }
   </div>
 </ng-template>

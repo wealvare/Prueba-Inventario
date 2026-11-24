@@ -7,6 +7,7 @@ import { debounceTime } from 'rxjs';
 import { EtiquetaEstado } from '../../../compartido/etiqueta-estado/etiqueta-estado';
 import { Campo } from '../../../compartido/formularios/campo';
 import { Paginador } from '../../../compartido/paginador/paginador';
+import { ServicioAutenticacion } from '../../../nucleo/servicios/servicio-autenticacion';
 import { ConfirmacionEliminar } from '../confirmacion-eliminar/confirmacion-eliminar';
 import { EstadoProductos, FiltroProductos, ProductoResumen } from '../modelos/producto';
 import { ServicioProductos } from '../servicios/servicio-productos';
@@ -35,6 +36,7 @@ export class PaginaProductos {
   private readonly parametros = toSignal(this.ruta.queryParamMap, { requireSync: true });
   private ultimoEnviado = '';
 
+  protected readonly esAdministrador = inject(ServicioAutenticacion).esAdministrador;
   protected readonly estados = ESTADOS;
   protected readonly tamanos = TAMANOS_PAGINA;
   protected readonly errorPrecios = signal<string | null>(null);

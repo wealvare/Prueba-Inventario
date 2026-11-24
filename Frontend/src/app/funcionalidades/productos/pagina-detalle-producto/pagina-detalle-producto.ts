@@ -3,6 +3,7 @@ import { Component, inject, input, numberAttribute, signal } from '@angular/core
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { EtiquetaEstado } from '../../../compartido/etiqueta-estado/etiqueta-estado';
+import { ServicioAutenticacion } from '../../../nucleo/servicios/servicio-autenticacion';
 import { ConfirmacionEliminar } from '../confirmacion-eliminar/confirmacion-eliminar';
 import { ServicioProductos } from '../servicios/servicio-productos';
 
@@ -16,6 +17,7 @@ export class PaginaDetalleProducto {
 
   readonly id = input.required({ transform: numberAttribute });
 
+  protected readonly esAdministrador = inject(ServicioAutenticacion).esAdministrador;
   protected readonly confirmando = signal(false);
   protected readonly producto = rxResource({
     params: () => this.id(),

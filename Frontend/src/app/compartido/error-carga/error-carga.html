@@ -1,0 +1,9 @@
+<div role="alert" class="tarjeta flex flex-wrap items-center justify-between gap-4 p-6">
+  <div class="min-w-0">
+    <p class="text-sm break-words text-red-700">{{ error().message }}</p>
+    @if (correlacion(); as codigo) {
+      <p class="mt-1 text-xs break-all text-neutral-600">Código de seguimiento: {{ codigo }}</p>
+    }
+  </div>
+  <button type="button" class="boton-secundario" (click)="reintentar.emit()">Reintentar</button>
+</div>

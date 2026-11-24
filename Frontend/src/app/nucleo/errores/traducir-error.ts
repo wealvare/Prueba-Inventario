@@ -12,6 +12,7 @@ const MENSAJES: Record<number, string> = {
   500: 'Ocurrió un error inesperado. Inténtalo de nuevo más tarde.',
 };
 
+const RESPUESTA_INVALIDA = 'La respuesta del servidor no es válida. Inténtalo de nuevo más tarde.';
 const ESTADOS_CON_DETALLE = [400, 401, 403, 404, 409];
 
 export function traducirError(respuesta: HttpErrorResponse): ErrorApi {
@@ -26,6 +27,10 @@ export function traducirError(respuesta: HttpErrorResponse): ErrorApi {
   );
 }
 
+export function esRespuestaInvalida(estado: number): boolean {
+  return estado >= 200 && estado < 300;
+}
+
 function leerProblema(cuerpo: unknown): ProblemaApi {
   return typeof cuerpo === 'object' && cuerpo !== null && !(cuerpo instanceof Event)
     ? (cuerpo as ProblemaApi)
@@ -34,6 +39,10 @@ function leerProblema(cuerpo: unknown): ProblemaApi {
 
 function elegirMensaje(respuesta: HttpErrorResponse, problema: ProblemaApi): string {
   const { status: estado } = respuesta;
+
+  if (esRespuestaInvalida(estado)) {
+    return RESPUESTA_INVALIDA;
+  }
 
   if (ESTADOS_CON_DETALLE.includes(estado) && problema.detail) {
     return problema.detail;

@@ -4,6 +4,7 @@ import { rxResource, takeUntilDestroyed, toSignal } from '@angular/core/rxjs-int
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { debounceTime } from 'rxjs';
+import { ErrorCarga } from '../../../compartido/error-carga/error-carga';
 import { EtiquetaEstado } from '../../../compartido/etiqueta-estado/etiqueta-estado';
 import { Campo } from '../../../compartido/formularios/campo';
 import { Paginador } from '../../../compartido/paginador/paginador';
@@ -21,6 +22,7 @@ const RETARDO_MS = 400;
     ConfirmacionEliminar,
     CurrencyPipe,
     DecimalPipe,
+    ErrorCarga,
     EtiquetaEstado,
     NgTemplateOutlet,
     Paginador,

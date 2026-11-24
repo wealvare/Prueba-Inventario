@@ -7,11 +7,8 @@
   <p role="status" class="tarjeta mt-8 p-10 text-center text-sm text-neutral-600">
     Cargando producto…
   </p>
-} @else if (errorCarga()) {
-  <div role="alert" class="tarjeta mt-8 flex flex-wrap items-center justify-between gap-4 p-6">
-    <p class="text-sm text-red-700">{{ errorCarga() }}</p>
-    <button type="button" class="boton-secundario" (click)="recargar()">Reintentar</button>
-  </div>
+} @else if (errorCarga(); as error) {
+  <app-error-carga class="mt-8 block" [error]="error" (reintentar)="recargar()" />
 } @else {
   <form
     class="mt-8 flex flex-col gap-10"

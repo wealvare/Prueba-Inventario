@@ -91,12 +91,7 @@
 
 <section class="mt-10" aria-label="Resultados" [attr.aria-busy]="productos.isLoading()">
   @if (productos.error(); as error) {
-    <div role="alert" class="tarjeta flex flex-wrap items-center justify-between gap-4 p-6">
-      <p class="text-sm text-red-700">{{ error.message }}</p>
-      <button type="button" class="boton-secundario" (click)="productos.reload()">
-        Reintentar
-      </button>
-    </div>
+    <app-error-carga [error]="error" (reintentar)="productos.reload()" />
   } @else if (productos.hasValue()) {
     @let resultado = productos.value();
     @if (resultado.elementos.length === 0) {

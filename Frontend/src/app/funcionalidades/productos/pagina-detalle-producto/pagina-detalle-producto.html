@@ -1,10 +1,7 @@
 <a routerLink="/productos" class="enlace">← Volver a productos</a>
 
 @if (producto.error(); as error) {
-  <div role="alert" class="tarjeta mt-6 flex flex-wrap items-center justify-between gap-4 p-6">
-    <p class="text-sm text-red-700">{{ error.message }}</p>
-    <button type="button" class="boton-secundario" (click)="producto.reload()">Reintentar</button>
-  </div>
+  <app-error-carga class="mt-6 block" [error]="error" (reintentar)="producto.reload()" />
 } @else if (producto.hasValue()) {
   @let datos = producto.value();
   <div class="mt-6 flex flex-wrap items-center justify-between gap-4">

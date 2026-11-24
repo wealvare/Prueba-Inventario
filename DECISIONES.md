@@ -68,7 +68,7 @@ Los controllers solo reciben la petición, llaman al puerto de entrada y eligen 
 
 ## Errores
 
-Todas las respuestas de error usan ProblemDetails en español, con el identificador de correlación. Un middleware traduce las excepciones: validación y reglas de negocio a 400, credenciales a 401, producto inexistente a 404, duplicados y lotes que ya no existen a 409 y el resto a 500 sin detalles internos. Los 500 se registran como error, los inicios de sesión rechazados como advertencia y los demás rechazos como información.
+Todas las respuestas de error usan ProblemDetails en español, con el identificador de correlación. Un middleware traduce las excepciones: validación y reglas de negocio a 400, credenciales a 401, producto inexistente a 404, duplicados y lotes que ya no existen a 409 y el resto a 500 sin detalles internos. Los 500 se registran como error, y toda petición rechazada deja una advertencia con método, ruta, estado y correlación. Los datos mal formados registran además los campos afectados, nunca sus valores.
 
 ## Autorización
 
@@ -110,7 +110,7 @@ La compilación de producción usa `/api`, relativa al sitio, para no fijar una 
 
 ## Errores en el frontend
 
-Un interceptor convierte las respuestas fallidas en `ErrorApi`, con mensaje en español, correlación y errores por campo. Usa el detalle de ProblemDetails en los errores de negocio y un texto genérico en los de servidor, donde además muestra la correlación para poder buscarla en los registros. El 401 cierra la sesión, salvo en el propio inicio de sesión. El registro del frontend escribe en la consola método, URL, estado y correlación, sin cuerpos ni tokens.
+Un interceptor convierte las respuestas fallidas en `ErrorApi`, con mensaje en español, correlación y errores por campo. Usa el detalle de ProblemDetails en los errores de negocio y un texto genérico en los de servidor, donde además muestra la correlación para poder buscarla en los registros. El 401 cierra la sesión, salvo en el propio inicio de sesión. Una respuesta correcta con JSON inválido se trata como error del servidor. Los errores ajenos a la Api, como no poder descargar una pantalla, llegan a un `ErrorHandler` propio que los registra y avisa. El registro del frontend escribe en la consola método, URL, estado y correlación, sin cuerpos ni tokens.
 
 El token solo se adjunta a peticiones dirigidas a la Api.
 

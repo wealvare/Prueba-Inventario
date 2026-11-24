@@ -13,6 +13,7 @@ import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
+import { ErrorCarga } from '../../../compartido/error-carga/error-carga';
 import { Campo } from '../../../compartido/formularios/campo';
 import { mensajeError } from '../../../compartido/formularios/mensaje-error';
 import { ErrorApi } from '../../../nucleo/modelos/error-api';
@@ -29,7 +30,7 @@ import {
 } from './formulario-producto';
 
 @Component({
-  imports: [Campo, ReactiveFormsModule, RouterLink],
+  imports: [Campo, ErrorCarga, ReactiveFormsModule, RouterLink],
   selector: 'app-pagina-formulario-producto',
   templateUrl: './pagina-formulario-producto.html',
 })
@@ -48,7 +49,7 @@ export class PaginaFormularioProducto {
   protected readonly categorias = rxResource({ stream: () => this.servicio.listarCategorias() });
   protected readonly cargando = signal(false);
   protected readonly guardando = signal(false);
-  protected readonly errorCarga = signal<string | null>(null);
+  protected readonly errorCarga = signal<ErrorApi | null>(null);
   protected readonly errorGeneral = signal<string | null>(null);
   protected readonly hayConflicto = signal(false);
   private readonly erroresServidor = signal<Record<string, string[]>>({});
@@ -144,7 +145,7 @@ export class PaginaFormularioProducto {
           cargarProducto(this.formulario, producto);
           this.limpiarErrores();
         },
-        error: (error: ErrorApi) => this.errorCarga.set(error.message),
+        error: (error: ErrorApi) => this.errorCarga.set(error),
       });
   }
 

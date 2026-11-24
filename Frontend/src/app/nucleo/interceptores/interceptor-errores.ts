@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import { traducirError } from '../errores/traducir-error';
+import { esRespuestaInvalida, traducirError } from '../errores/traducir-error';
 import { ServicioAutenticacion, URL_INICIO_SESION } from '../servicios/servicio-autenticacion';
 import { ServicioNotificaciones } from '../servicios/servicio-notificaciones';
 import { ServicioRegistro } from '../servicios/servicio-registro';
@@ -31,7 +31,7 @@ export const interceptorErrores: HttpInterceptorFn = (peticion, siguiente) => {
         correlacion: error.correlacion,
       };
 
-      if (error.estado === 0 || error.estado >= 500) {
+      if (error.estado === 0 || error.estado >= 500 || esRespuestaInvalida(error.estado)) {
         registro.error(error.message, datos);
       } else {
         registro.advertencia(error.message, datos);

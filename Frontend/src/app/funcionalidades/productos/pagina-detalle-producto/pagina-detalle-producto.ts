@@ -2,13 +2,22 @@ import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { Component, inject, input, numberAttribute, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { ErrorCarga } from '../../../compartido/error-carga/error-carga';
 import { EtiquetaEstado } from '../../../compartido/etiqueta-estado/etiqueta-estado';
 import { ServicioAutenticacion } from '../../../nucleo/servicios/servicio-autenticacion';
 import { ConfirmacionEliminar } from '../confirmacion-eliminar/confirmacion-eliminar';
 import { ServicioProductos } from '../servicios/servicio-productos';
 
 @Component({
-  imports: [ConfirmacionEliminar, CurrencyPipe, DatePipe, DecimalPipe, EtiquetaEstado, RouterLink],
+  imports: [
+    ConfirmacionEliminar,
+    CurrencyPipe,
+    DatePipe,
+    DecimalPipe,
+    ErrorCarga,
+    EtiquetaEstado,
+    RouterLink,
+  ],
   selector: 'app-pagina-detalle-producto',
   templateUrl: './pagina-detalle-producto.html',
 })

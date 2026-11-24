@@ -1,7 +1,14 @@
-import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpRequest,
+  provideHttpClient,
+  withInterceptors,
+} from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { throwError } from 'rxjs';
 import { entorno } from '../../../entornos/entorno';
 import { ErrorApi } from '../modelos/error-api';
 import { ServicioAutenticacion, URL_INICIO_SESION } from '../servicios/servicio-autenticacion';
@@ -103,6 +110,21 @@ describe('Interceptores', () => {
       expect(notificaciones().map(({ tipo, mensaje }) => [tipo, mensaje])).toEqual([
         ['error', mensaje],
       ]);
+    });
+
+    it('avisa y registra como error una respuesta correcta con JSON inválido', () => {
+      let error!: ErrorApi;
+      TestBed.runInInjectionContext(() =>
+        interceptorErrores(new HttpRequest('GET', URL), () =>
+          throwError(() => new HttpErrorResponse({ status: 200, error: { text: '<html>' } })),
+        ),
+      ).subscribe({ error: (e) => (error = e) });
+
+      expect(error.message).toBe(
+        'La respuesta del servidor no es válida. Inténtalo de nuevo más tarde.',
+      );
+      expect(registro.error).toHaveBeenCalledOnce();
+      expect(notificaciones()).toHaveLength(1);
     });
 
     it('usa el detalle de ProblemDetails y conserva los errores por campo', () => {

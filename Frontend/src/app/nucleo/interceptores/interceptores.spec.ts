@@ -10,7 +10,7 @@ import { ServicioRegistro } from '../servicios/servicio-registro';
 import { interceptorErrores } from './interceptor-errores';
 import { interceptorToken } from './interceptor-token';
 
-const URL = `${entorno.urlApi}/api/productos`;
+const URL = `${entorno.urlApi}/productos`;
 
 describe('Interceptores', () => {
   const autenticacion = { obtenerToken: vi.fn(), expirarSesion: vi.fn() };

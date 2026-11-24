@@ -102,6 +102,12 @@ Cada funcionalidad declara sus rutas y sus páginas se descargan al visitarlas. 
 
 El token se guarda en `sessionStorage`: sobrevive a recargas, pero se borra al cerrar la pestaña. El frontend lee el rol y la expiración solo para adaptar la interfaz; la autorización real la hace la Api. La sesión se cierra con un temporizador y también se comprueba la vigencia antes de cada petición, por si el equipo estuvo suspendido. La ruta de retorno tras iniciar sesión solo admite rutas internas.
 
+Se eligió `sessionStorage` en lugar de una cookie `HttpOnly` porque la Api es sin estado y recibe el token en el encabezado `Authorization`, lo que evita la protección contra CSRF y simplifica el uso entre orígenes distintos. A cambio, un script malicioso (XSS) podría leer el token. Se mitiga con el escape automático de Angular, sin insertar HTML, y con una expiración corta. Una cookie `HttpOnly`, `Secure` y `SameSite` impediría leerlo, pero exige que la Api la emita y la invalide, defensa contra CSRF y, en lo posible, un mismo dominio.
+
+## URL de la Api en producción
+
+La compilación de producción usa `/api`, relativa al sitio, para no fijar una dirección en el código. Al desplegar hay que configurar el proxy correspondiente o indicar la dirección completa.
+
 ## Errores en el frontend
 
 Un interceptor convierte las respuestas fallidas en `ErrorApi`, con mensaje en español, correlación y errores por campo. Usa el detalle de ProblemDetails en los errores de negocio y un texto genérico en los de servidor, donde además muestra la correlación para poder buscarla en los registros. El 401 cierra la sesión, salvo en el propio inicio de sesión. El registro del frontend escribe en la consola método, URL, estado y correlación, sin cuerpos ni tokens.

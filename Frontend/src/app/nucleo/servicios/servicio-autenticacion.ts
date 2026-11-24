@@ -10,7 +10,7 @@ import { leerToken } from './lector-token';
 import { ServicioNotificaciones } from './servicio-notificaciones';
 
 export const RUTA_INICIO_SESION = '/iniciar-sesion';
-export const URL_INICIO_SESION = `${entorno.urlApi}/api/autenticacion/login`;
+export const URL_INICIO_SESION = `${entorno.urlApi}/autenticacion/login`;
 const ESPERA_MAXIMA_MS = 2_147_483_647;
 
 @Injectable({ providedIn: 'root' })

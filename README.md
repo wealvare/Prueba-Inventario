@@ -82,7 +82,9 @@ npm start
 
 Abre `http://localhost:4200` e inicia sesión con uno de los usuarios definidos en `.env`. Ese origen debe estar en `Cors__OrigenesPermitidos__0`.
 
-La URL de la Api se configura en `Frontend/src/entornos`: `entorno.ts` para desarrollo y `entorno.produccion.ts` para producción. Por defecto es `http://localhost:5165`.
+La URL base de la Api se configura en `Frontend/src/entornos`. En desarrollo, `entorno.ts` usa `http://localhost:5165/api`. En producción, `entorno.produccion.ts` usa la ruta relativa `/api`.
+
+**Pendiente al desplegar:** publica el frontend y la Api bajo el mismo dominio, con un proxy que dirija `/api` a la Api, o cambia `urlApi` por la dirección completa y agrega el origen del frontend a `Cors__OrigenesPermitidos__0`.
 
 ```bash
 npm run build

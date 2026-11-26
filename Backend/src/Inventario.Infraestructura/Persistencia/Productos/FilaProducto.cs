@@ -8,8 +8,16 @@ internal sealed record FilaProducto(
     string Nombre,
     string Descripcion,
     string Categoria,
-    bool Activo)
+    bool Activo,
+    DateTime? FechaExpira)
 {
     public Producto AProducto(IEnumerable<FilaLote> lotes) => Producto.Reconstruir(
-        Id, Codigo, Nombre, Descripcion, Categoria, Activo, lotes.Select(lote => lote.ALote(Id)));
+        Id,
+        Codigo,
+        Nombre,
+        Descripcion,
+        Categoria,
+        Activo,
+        lotes.Select(lote => lote.ALote(Id)),
+        FechaExpira is null ? null : DateOnly.FromDateTime(FechaExpira.Value));
 }

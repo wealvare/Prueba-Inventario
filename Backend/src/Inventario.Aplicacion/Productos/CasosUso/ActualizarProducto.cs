@@ -32,7 +32,8 @@ public sealed class ActualizarProducto(
             solicitud.Nombre,
             solicitud.Descripcion,
             solicitud.Categoria,
-            solicitud.Activo!.Value);
+            solicitud.Activo!.Value,
+            solicitud.FechaExpira);
         producto.SincronizarLotes(solicitud.Lotes.ADatos());
 
         var guardado = await repositorio.ActualizarAsync(producto, cancelacion);

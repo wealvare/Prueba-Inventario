@@ -6,6 +6,7 @@ public sealed record ProductoResumenDto(
     string Nombre,
     string Categoria,
     bool Activo,
+    DateTime? FechaExpira,
     int CantidadLotes,
     long CantidadTotal,
     decimal? PrecioMinimo,

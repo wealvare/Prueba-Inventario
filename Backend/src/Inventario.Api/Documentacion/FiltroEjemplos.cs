@@ -37,13 +37,14 @@ internal sealed class FiltroEjemplos : ISchemaFilter
         [typeof(SolicitudCrearProducto)] = """
             {
               "codigo": "TEC-100", "nombre": "Teclado compacto", "descripcion": "Teclado de 60 teclas", "categoria": "Periféricos",
+              "fechaExpira": "2027-05-01",
               "lotes": [{ "numeroLote": "TEC-100-L1", "fechaIngreso": "2026-01-15", "precio": 59.90, "cantidad": 20 }]
             }
             """,
         [typeof(SolicitudActualizarProducto)] = """
             {
               "codigo": "TEC-100", "nombre": "Teclado compacto", "descripcion": "Teclado de 60 teclas", "categoria": "Periféricos",
-              "activo": true,
+              "activo": true, "fechaExpira": "2027-05-01",
               "lotes": [
                 { "id": 1, "numeroLote": "TEC-100-L1", "fechaIngreso": "2026-01-15", "precio": 62.00, "cantidad": 15 },
                 { "numeroLote": "TEC-100-L2", "fechaIngreso": "2026-02-15", "precio": 65.50, "cantidad": 30 }
@@ -54,13 +55,15 @@ internal sealed class FiltroEjemplos : ISchemaFilter
             {
               "id": 1, "codigo": "TEC-100", "nombre": "Teclado compacto", "descripcion": "Teclado de 60 teclas",
               "categoria": "Periféricos", "activo": true,
+              "fechaExpira": "2027-05-01",
               "lotes": [{ "id": 1, "numeroLote": "TEC-100-L1", "fechaIngreso": "2026-01-15", "precio": 59.90, "cantidad": 20 }]
             }
             """,
         [typeof(ProductoResumenDto)] = """
             {
               "id": 1, "codigo": "TEC-100", "nombre": "Teclado compacto", "categoria": "Periféricos", "activo": true,
-              "cantidadLotes": 2, "cantidadTotal": 45, "precioMinimo": 62.00, "precioMaximo": 65.50
+              "fechaExpira": "2027-05-01", "cantidadLotes": 2, "cantidadTotal": 45,
+              "precioMinimo": 62.00, "precioMaximo": 65.50
             }
             """
     };

@@ -175,7 +175,8 @@ public sealed class RepositorioProductos(IFabricaConexion fabrica, EjecutorTrans
         producto.Nombre,
         producto.Descripcion,
         producto.Categoria,
-        producto.Activo
+        producto.Activo,
+        FechaExpira = producto.FechaExpira?.ToDateTime(TimeOnly.MinValue)
     };
 
     private static string NumeroLoteDuplicado(SqlException error, Producto producto) =>

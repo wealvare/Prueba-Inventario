@@ -16,7 +16,12 @@ public sealed class CrearProducto(
     {
         await validador.ValidateAndThrowAsync(solicitud, cancelacion);
 
-        var producto = new Producto(solicitud.Codigo, solicitud.Nombre, solicitud.Descripcion, solicitud.Categoria);
+        var producto = new Producto(
+            solicitud.Codigo,
+            solicitud.Nombre,
+            solicitud.Descripcion,
+            solicitud.Categoria,
+            solicitud.FechaExpira);
         producto.SincronizarLotes(solicitud.Lotes.ADatos());
 
         if (await repositorio.ExisteCodigoAsync(producto.Codigo, null, cancelacion))

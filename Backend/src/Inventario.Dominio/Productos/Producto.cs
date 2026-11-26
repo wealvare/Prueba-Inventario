@@ -13,12 +13,13 @@ public sealed class Producto
     private readonly List<LoteProducto> _lotes = [];
     private readonly List<int> _idsLotesEliminados = [];
 
-    public Producto(string codigo, string nombre, string? descripcion, string categoria)
+    public Producto(string codigo, string nombre, string? descripcion, string categoria, DateOnly? fechaExpira = null)
     {
         Codigo = NormalizarCodigo(codigo);
         Nombre = Texto.Requerido(nombre, LongitudNombre, "nombre");
         Descripcion = Texto.Limitado(descripcion, LongitudDescripcion, "descripción");
         Categoria = Texto.Requerido(categoria, LongitudCategoria, "categoría");
+        FechaExpira = fechaExpira;
         Activo = true;
     }
 
@@ -28,6 +29,8 @@ public sealed class Producto
     public string Descripcion { get; private set; }
     public string Categoria { get; private set; }
     public bool Activo { get; private set; }
+    public DateOnly? FechaExpira { get; private set; }
+
     public IReadOnlyCollection<LoteProducto> Lotes => _lotes;
     public IReadOnlyCollection<int> IdsLotesEliminados => _idsLotesEliminados;
 
@@ -38,9 +41,10 @@ public sealed class Producto
         string descripcion,
         string categoria,
         bool activo,
-        IEnumerable<LoteProducto> lotes)
+        IEnumerable<LoteProducto> lotes,
+        DateOnly? fechaExpira = null)
     {
-        var producto = new Producto(codigo, nombre, descripcion, categoria) { Id = id, Activo = activo };
+        var producto = new Producto(codigo, nombre, descripcion, categoria, fechaExpira) { Id = id, Activo = activo };
         producto._lotes.AddRange(lotes);
         return producto;
     }
@@ -48,13 +52,20 @@ public sealed class Producto
     public static string NormalizarCodigo(string codigo) =>
         Texto.Requerido(codigo, LongitudCodigo, "código").ToUpperInvariant();
 
-    public void Actualizar(string codigo, string nombre, string? descripcion, string categoria, bool activo)
+    public void Actualizar(
+        string codigo,
+        string nombre,
+        string? descripcion,
+        string categoria,
+        bool activo,
+        DateOnly? fechaExpira = null)
     {
         Codigo = NormalizarCodigo(codigo);
         Nombre = Texto.Requerido(nombre, LongitudNombre, "nombre");
         Descripcion = Texto.Limitado(descripcion, LongitudDescripcion, "descripción");
         Categoria = Texto.Requerido(categoria, LongitudCategoria, "categoría");
         Activo = activo;
+        FechaExpira = fechaExpira;
     }
 
     public void Desactivar() => Activo = false;

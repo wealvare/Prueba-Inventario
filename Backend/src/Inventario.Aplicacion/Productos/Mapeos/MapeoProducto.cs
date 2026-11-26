@@ -12,6 +12,7 @@ internal static class MapeoProducto
         producto.Descripcion,
         producto.Categoria,
         producto.Activo,
+        producto.FechaExpira,
         producto.Lotes
             .Select(lote => new LoteDto(lote.Id, lote.NumeroLote, lote.FechaIngreso, lote.Precio, lote.Cantidad))
             .ToList());

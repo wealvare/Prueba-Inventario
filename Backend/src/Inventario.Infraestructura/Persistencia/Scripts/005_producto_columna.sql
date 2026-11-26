@@ -1,0 +1,1 @@
+ALTER TABLE dbo.Productos ADD FechaExpira DATE NULL;

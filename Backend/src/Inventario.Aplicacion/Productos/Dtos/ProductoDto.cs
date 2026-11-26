@@ -7,4 +7,5 @@ public sealed record ProductoDto(
     string Descripcion,
     string Categoria,
     bool Activo,
+    DateOnly? FechaExpira,
     IReadOnlyList<LoteDto> Lotes);

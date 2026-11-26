@@ -5,4 +5,5 @@ public sealed record SolicitudCrearProducto(
     string Nombre,
     string? Descripcion,
     string Categoria,
-    IReadOnlyList<SolicitudLote> Lotes);
+    IReadOnlyList<SolicitudLote> Lotes,
+    DateOnly? FechaExpira = null);

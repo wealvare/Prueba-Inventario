@@ -3,7 +3,7 @@ namespace Inventario.Infraestructura.Persistencia.Productos;
 internal static class SqlProductos
 {
     public const string ObtenerConLotes = """
-        SELECT Id, Codigo, Nombre, Descripcion, Categoria, Activo
+        SELECT Id, Codigo, Nombre, Descripcion, Categoria, Activo, FechaExpira
         FROM dbo.Productos
         WHERE Id = @id;
 
@@ -27,14 +27,15 @@ internal static class SqlProductos
         """;
 
     public const string Insertar = """
-        INSERT INTO dbo.Productos (Codigo, Nombre, Descripcion, Categoria, Activo)
+        INSERT INTO dbo.Productos (Codigo, Nombre, Descripcion, Categoria, Activo, FechaExpira)
         OUTPUT INSERTED.Id
-        VALUES (@Codigo, @Nombre, @Descripcion, @Categoria, @Activo);
+        VALUES (@Codigo, @Nombre, @Descripcion, @Categoria, @Activo, @FechaExpira);
         """;
 
     public const string Actualizar = """
         UPDATE dbo.Productos
-        SET Codigo = @Codigo, Nombre = @Nombre, Descripcion = @Descripcion, Categoria = @Categoria, Activo = @Activo
+        SET Codigo = @Codigo, Nombre = @Nombre, Descripcion = @Descripcion, Categoria = @Categoria,
+            Activo = @Activo, FechaExpira = @FechaExpira
         WHERE Id = @Id;
         """;
 
@@ -71,13 +72,13 @@ internal static class SqlProductos
         WHERE {condiciones};
 
         WITH pagina AS (
-            SELECT producto.Id, producto.Codigo, producto.Nombre, producto.Categoria, producto.Activo
+            SELECT producto.Id, producto.Codigo, producto.Nombre, producto.Categoria, producto.Activo, producto.FechaExpira
             FROM dbo.Productos AS producto
             WHERE {condiciones}
             ORDER BY producto.Nombre, producto.Id
             OFFSET @desplazamiento ROWS FETCH NEXT @tamanoPagina ROWS ONLY
         )
-        SELECT pagina.Id, pagina.Codigo, pagina.Nombre, pagina.Categoria, pagina.Activo,
+        SELECT pagina.Id, pagina.Codigo, pagina.Nombre, pagina.Categoria, pagina.Activo, pagina.FechaExpira,
             resumen.CantidadLotes, resumen.CantidadTotal, resumen.PrecioMinimo, resumen.PrecioMaximo
         FROM pagina
         OUTER APPLY (

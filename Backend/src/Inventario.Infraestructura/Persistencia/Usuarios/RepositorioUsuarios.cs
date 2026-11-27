@@ -43,7 +43,9 @@ public sealed class RepositorioUsuarios(IFabricaConexion fabrica, EjecutorTransa
             new CommandDefinition(SqlUsuarios.Listar, parametros, cancellationToken: cancelacion));
 
         var total = await resultados.ReadSingleAsync<int>();
-        var elementos = (await resultados.ReadAsync<UsuarioDto>()).AsList();
+        var elementos = (await resultados.ReadAsync<FilaUsuarioListado>())
+            .Select(fila => fila.ADto())
+            .AsList();
 
         return new ResultadoPaginado<UsuarioDto>(elementos, filtro.Pagina, filtro.TamanoPagina, total);
     }
@@ -125,6 +127,7 @@ public sealed class RepositorioUsuarios(IFabricaConexion fabrica, EjecutorTransa
         usuario.Correo,
         usuario.HashContrasena,
         rol = usuario.Rol.ToString(),
-        usuario.Activo
+        usuario.Activo,
+        usuario.ExpiraContrasena
     };
 }

@@ -44,7 +44,8 @@ public sealed class MiddlewareErrores(RequestDelegate siguiente, ILogger<Middlew
             Problemas.Crear(contexto, StatusCodes.Status409Conflict, error.Message),
         ExcepcionProductoNoEncontrado or ExcepcionUsuarioNoEncontrado =>
             Problemas.Crear(contexto, StatusCodes.Status404NotFound, error.Message),
-        ExcepcionCredencialesInvalidas => Problemas.Crear(contexto, StatusCodes.Status401Unauthorized, error.Message),
+        ExcepcionCredencialesInvalidas or ExcepcionVigenciaVencida =>
+            Problemas.Crear(contexto, StatusCodes.Status401Unauthorized, error.Message),
         ExcepcionDominio => Problemas.Crear(contexto, StatusCodes.Status400BadRequest, error.Message),
         BadHttpRequestException solicitud => Problemas.Crear(contexto, solicitud.StatusCode),
         _ => Problemas.Crear(contexto, StatusCodes.Status500InternalServerError)

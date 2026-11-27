@@ -11,7 +11,8 @@ public sealed class IniciarSesion(
     IRepositorioUsuarios repositorio,
     IHasheadorContrasena hasheador,
     IServicioToken servicioToken,
-    IValidator<SolicitudInicioSesion> validador) : IIniciarSesion
+    IValidator<SolicitudInicioSesion> validador,
+    TimeProvider reloj) : IIniciarSesion
 {
     public async Task<RespuestaInicioSesion> EjecutarAsync(SolicitudInicioSesion solicitud, CancellationToken cancelacion)
     {
@@ -24,6 +25,9 @@ public sealed class IniciarSesion(
 
         if (usuario is not { Activo: true } || !contrasenaValida)
             throw new ExcepcionCredencialesInvalidas();
+
+        if (!usuario.TieneVigencia(DateOnly.FromDateTime(reloj.GetLocalNow().DateTime)))
+            throw new ExcepcionVigenciaVencida();
 
         var token = servicioToken.Generar(usuario);
 

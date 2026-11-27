@@ -16,18 +16,19 @@ public sealed partial class Usuario
 
     public const string MensajeCorreo = "El correo no tiene un formato válido.";
 
-    public Usuario(string nombreUsuario, string correo, string hashContrasena, RolUsuario rol)
+    public Usuario(string nombreUsuario, string correo, string hashContrasena, RolUsuario rol, DateOnly? expiraContrasena = null)
         : this(
             0,
             ValidarNombreUsuario(nombreUsuario),
             ValidarCorreo(correo),
             ValidarHash(hashContrasena),
             ValidarRol(rol),
-            true)
+            true,
+            expiraContrasena)
     {
     }
 
-    private Usuario(int id, string nombreUsuario, string correo, string hashContrasena, RolUsuario rol, bool activo)
+    private Usuario(int id, string nombreUsuario, string correo, string hashContrasena, RolUsuario rol, bool activo, DateOnly? expiraContrasena)
     {
         Id = id;
         NombreUsuario = nombreUsuario;
@@ -35,6 +36,7 @@ public sealed partial class Usuario
         HashContrasena = hashContrasena;
         Rol = rol;
         Activo = activo;
+        ExpiraContrasena = expiraContrasena;
     }
 
     public int Id { get; private set; }
@@ -43,8 +45,11 @@ public sealed partial class Usuario
     public string HashContrasena { get; private set; }
     public RolUsuario Rol { get; private set; }
     public bool Activo { get; private set; }
+    public DateOnly? ExpiraContrasena { get; private set; }
 
     public bool EsAdministradorActivo => Activo && Rol == RolUsuario.Administrador;
+
+    public bool TieneVigencia(DateOnly hoy) => ExpiraContrasena is { } fecha && fecha >= hoy;
 
     public static Usuario Reconstruir(
         int id,
@@ -52,14 +57,22 @@ public sealed partial class Usuario
         string correo,
         string hashContrasena,
         RolUsuario rol,
-        bool activo) => new(id, nombreUsuario, correo, hashContrasena, rol, activo);
+        bool activo,
+        DateOnly? expiraContrasena = null) =>
+        new(id, nombreUsuario, correo, hashContrasena, rol, activo, expiraContrasena);
 
     public static bool EsNombreUsuarioValido(string nombreUsuario) =>
         nombreUsuario.Trim() is { Length: >= LongitudMinimaNombreUsuario } nombre && FormatoNombreUsuario().IsMatch(nombre);
 
     public static bool EsCorreoValido(string correo) => FormatoCorreo().IsMatch(correo.Trim());
 
-    public void Actualizar(string nombreUsuario, string correo, RolUsuario rol, bool activo, int idActor)
+    public void Actualizar(
+        string nombreUsuario,
+        string correo,
+        RolUsuario rol,
+        bool activo,
+        DateOnly? expiraContrasena,
+        int idActor)
     {
         if (Id == idActor && (rol != RolUsuario.Administrador || !activo))
             throw new ExcepcionCuentaPropia();
@@ -68,6 +81,7 @@ public sealed partial class Usuario
         Correo = ValidarCorreo(correo);
         Rol = ValidarRol(rol);
         Activo = activo;
+        ExpiraContrasena = expiraContrasena;
     }
 
     public void CambiarContrasena(string hashContrasena) => HashContrasena = ValidarHash(hashContrasena);

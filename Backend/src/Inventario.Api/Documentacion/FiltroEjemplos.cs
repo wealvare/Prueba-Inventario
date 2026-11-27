@@ -17,16 +17,16 @@ internal sealed class FiltroEjemplos : ISchemaFilter
             { "token": "eyJhbGciOi...", "expiracion": "2026-01-15T15:00:00Z", "nombreUsuario": "admin", "rol": "Administrador" }
             """,
         [typeof(SolicitudRegistro)] = """
-            { "nombreUsuario": "ana.perez", "correo": "ana@ejemplo.com", "contrasena": "Tu-contrasena1" }
+            { "nombreUsuario": "ana.perez", "correo": "ana@ejemplo.com", "contrasena": "Tu-contrasena1", "expiraContrasena": "2027-12-31" }
             """,
         [typeof(SolicitudCrearUsuario)] = """
-            { "nombreUsuario": "ana.perez", "correo": "ana@ejemplo.com", "contrasena": "Tu-contrasena1", "rol": "Consulta" }
+            { "nombreUsuario": "ana.perez", "correo": "ana@ejemplo.com", "contrasena": "Tu-contrasena1", "rol": "Consulta", "expiraContrasena": "2027-12-31" }
             """,
         [typeof(SolicitudActualizarUsuario)] = """
-            { "nombreUsuario": "ana.perez", "correo": "ana@ejemplo.com", "rol": "Consulta", "activo": true, "contrasena": null }
+            { "nombreUsuario": "ana.perez", "correo": "ana@ejemplo.com", "rol": "Consulta", "activo": true, "contrasena": null, "expiraContrasena": "2027-12-31" }
             """,
         [typeof(UsuarioDto)] = """
-            { "id": 3, "nombreUsuario": "ana.perez", "correo": "ana@ejemplo.com", "rol": "Consulta", "activo": true }
+            { "id": 3, "nombreUsuario": "ana.perez", "correo": "ana@ejemplo.com", "rol": "Consulta", "activo": true, "expiraContrasena": "2027-12-31" }
             """,
         [typeof(SolicitudRegistroCliente)] = """
             {

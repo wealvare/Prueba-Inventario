@@ -31,6 +31,7 @@ public sealed class ActualizarUsuario(
             solicitud.Correo,
             solicitud.Rol!.Value,
             solicitud.Activo!.Value,
+            solicitud.ExpiraContrasena,
             idActor);
 
         await repositorio.ComprobarUnicoAsync(usuario, cancelacion);

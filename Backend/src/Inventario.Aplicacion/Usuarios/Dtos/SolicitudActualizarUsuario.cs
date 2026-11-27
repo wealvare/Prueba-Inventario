@@ -7,4 +7,5 @@ public sealed record SolicitudActualizarUsuario(
     string Correo,
     RolUsuario? Rol,
     bool? Activo,
-    string? Contrasena);
+    string? Contrasena,
+    DateOnly? ExpiraContrasena);

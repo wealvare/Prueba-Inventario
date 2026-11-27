@@ -6,5 +6,5 @@ namespace Inventario.Aplicacion.Usuarios.Mapeos;
 internal static class MapeoUsuario
 {
     public static UsuarioDto ADto(this Usuario usuario) =>
-        new(usuario.Id, usuario.NombreUsuario, usuario.Correo, usuario.Rol.ToString(), usuario.Activo);
+        new(usuario.Id, usuario.NombreUsuario, usuario.Correo, usuario.Rol.ToString(), usuario.Activo, usuario.ExpiraContrasena);
 }

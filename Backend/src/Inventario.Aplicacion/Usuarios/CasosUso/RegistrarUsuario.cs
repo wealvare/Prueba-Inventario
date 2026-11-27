@@ -22,7 +22,8 @@ public sealed class RegistrarUsuario(
             solicitud.NombreUsuario,
             solicitud.Correo,
             hasheador.Hashear(solicitud.Contrasena),
-            RolUsuario.Consulta);
+            RolUsuario.Consulta,
+            solicitud.ExpiraContrasena);
 
         await repositorio.ComprobarUnicoAsync(usuario, cancelacion);
 

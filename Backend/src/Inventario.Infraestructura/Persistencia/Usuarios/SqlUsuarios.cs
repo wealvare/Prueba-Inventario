@@ -3,13 +3,13 @@ namespace Inventario.Infraestructura.Persistencia.Usuarios;
 internal static class SqlUsuarios
 {
     public const string ObtenerPorNombre = """
-        SELECT Id, NombreUsuario, Correo, HashContrasena, Rol, Activo
+        SELECT Id, NombreUsuario, Correo, HashContrasena, Rol, Activo, ExpiraContrasena
         FROM dbo.Usuarios
         WHERE NombreUsuario = @nombreUsuario;
         """;
 
     public const string ObtenerPorId = """
-        SELECT Id, NombreUsuario, Correo, HashContrasena, Rol, Activo
+        SELECT Id, NombreUsuario, Correo, HashContrasena, Rol, Activo, ExpiraContrasena
         FROM dbo.Usuarios
         WHERE Id = @id;
         """;
@@ -44,21 +44,22 @@ internal static class SqlUsuarios
         SELECT COUNT(*)
         FROM dbo.Usuarios;
 
-        SELECT Id, NombreUsuario, Correo, Rol, Activo
+        SELECT Id, NombreUsuario, Correo, Rol, Activo, ExpiraContrasena
         FROM dbo.Usuarios
         ORDER BY NombreUsuario
         OFFSET @desplazamiento ROWS FETCH NEXT @tamanoPagina ROWS ONLY;
         """;
 
     public const string Insertar = """
-        INSERT INTO dbo.Usuarios (NombreUsuario, Correo, HashContrasena, Rol, Activo)
+        INSERT INTO dbo.Usuarios (NombreUsuario, Correo, HashContrasena, Rol, Activo, ExpiraContrasena)
         OUTPUT INSERTED.Id
-        VALUES (@NombreUsuario, @Correo, @HashContrasena, @rol, @Activo);
+        VALUES (@NombreUsuario, @Correo, @HashContrasena, @rol, @Activo, @ExpiraContrasena);
         """;
 
     public const string Actualizar = """
         UPDATE dbo.Usuarios
-        SET NombreUsuario = @NombreUsuario, Correo = @Correo, HashContrasena = @HashContrasena, Rol = @rol, Activo = @Activo
+        SET NombreUsuario = @NombreUsuario, Correo = @Correo, HashContrasena = @HashContrasena, Rol = @rol, Activo = @Activo,
+            ExpiraContrasena = @ExpiraContrasena
         WHERE Id = @Id;
         """;
 }

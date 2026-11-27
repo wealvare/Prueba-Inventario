@@ -1,0 +1,1 @@
+ALTER TABLE dbo.Usuarios ADD ExpiraContracena DATE NULL;

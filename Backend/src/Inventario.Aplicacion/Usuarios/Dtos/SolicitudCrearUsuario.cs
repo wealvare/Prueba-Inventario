@@ -6,4 +6,5 @@ public sealed record SolicitudCrearUsuario(
     string NombreUsuario,
     string Correo,
     string Contrasena,
-    RolUsuario? Rol);
+    RolUsuario? Rol,
+    DateOnly? ExpiraContrasena);
